@@ -29,14 +29,24 @@ module decode (
     assign rs1 	  = ins_i[19:15];
     assign rs2 	  = ins_i[24:20];
     assign func7  = ins_i[31:25];
+    assign imm    = ins_i[31:20] && 32'h0000_0FFF;
 
     always @(*) begin
         ins_o = ins_i;
         ins_addr_o = ins_addr_i;
 
         case (opcode)
-            `INST_TYPE_I: begin
-                
+            `INST_TYPE_I: begin     //I type instructions
+                rs1_addr_o = rs1;
+                rs2_addr_o = 5'b0;
+                rd_addr_o = rd;
+                imm_o = imm;
+            end
+            `INST_TYPE_R_M:begin    //R&M type instructions
+                rs1_addr_o = rs1;
+                rs2_addr_o = rs2;
+                rd_addr_o = rd;
+                imm_o = 32'b0;
             end
             default: begin
                 rs1_addr_o = 5'b0;
