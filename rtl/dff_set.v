@@ -1,5 +1,5 @@
 module dff_set #(
-	parameter DW  = 32
+	parameter DW  = 6'd32
 )
 (
 	input wire clk,
