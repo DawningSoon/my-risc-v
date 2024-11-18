@@ -9,7 +9,7 @@ module dff_set #(
 	output reg [DW-1:0]  data_o	
 );
 	always @(posedge clk)begin
-		if(rst == 1'b0)
+		if(rst == 1'b1)
 			data_o <= set_data;
 		else
 			data_o <= data_i;

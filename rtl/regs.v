@@ -18,22 +18,22 @@ reg [31:0] regs[0:31];
 integer i;
 
 always @(*) begin
-    if(rst == 1'b1) rs1_data_o = 32'b0;
+    if(rst == 1'b1) rs1_data_o <= 32'b0;
     else begin
-        if(rs1_addr_i == 5'b0) rs1_data_o = 32'b0;
+        if(rs1_addr_i == 5'b0) rs1_data_o <= 32'b0;
         else if(wr_en == 1'b1 && (rd_addr_i == rs1_addr_i))
-            rs1_data_o = rd_data_i;
-        else rs1_data_o = regs[rs1_addr_i];
+            rs1_data_o <= rd_data_i;
+        else rs1_data_o <= regs[rs1_addr_i];
     end 
 end
 
 always @(*) begin
-    if(rst == 1'b1) rs1_data_o = 32'b0;
+    if(rst == 1'b1) rs1_data_o <= 32'b0;
     else begin
-        if(rs2_addr_i == 5'b0) rs2_data_o = 32'b0;
+        if(rs2_addr_i == 5'b0) rs2_data_o <= 32'b0;
         else if(wr_en == 1'b1 && (rd_addr_i == rs2_addr_i))
-            rs2_data_o = rd_data_i;
-        else rs2_data_o = regs[rs2_addr_i];
+            rs2_data_o <= rd_data_i;
+        else rs2_data_o <= regs[rs2_addr_i];
     end 
 end
 

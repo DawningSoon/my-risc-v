@@ -5,7 +5,7 @@ module pc_reg (
 );
 
 always @(posedge clk) begin
-    if(rst == 1'b0)begin
+    if(rst == 1'b1)begin
         pc <= 32'b0;
     end
     else begin

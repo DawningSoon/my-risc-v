@@ -1,4 +1,6 @@
 module ins_fetch(
+	input wire 		clk,
+	input wire  	rst,	
 	//from pc
 	input  wire[31:0] pc_addr_i,
 	//from rom 
@@ -15,7 +17,7 @@ module ins_fetch(
 	
 	// assign inst_addr_o  = pc_addr_i;
 	
-	assign inst_o = rom_inst_i;
+	// assign inst_o = rom_inst_i;
 
 	dff_set 
 	#(.DW(6'd32))

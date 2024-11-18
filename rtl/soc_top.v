@@ -7,7 +7,7 @@ module top (
 
 wire [31:0]     pc_reg_pc_o;    //pc to if
 
-assign pc_reg_pc_o = inst_addr_o;   //从外部rom获取指令
+
 
 wire [31:0]     if_id_ins_addr;     //if to id
 wire [31:0]     if_id_ins;
@@ -17,8 +17,8 @@ wire [31:0]     id_ld_ins_addr;
 wire [4:0]     id_reg_rs1_addr;
 wire [4:0]     id_reg_rs2_addr;
 
-wire [4:0]     reg_ld_rs1_addr;     //reg to ld
-wire [4:0]     reg_ld_rs2_addr;
+// wire [4:0]     reg_ld_rs1_addr;     //reg to ld
+// wire [4:0]     reg_ld_rs2_addr;
 wire [31:0]     reg_ld_rs1_data;
 wire [31:0]     reg_ld_rs2_data;
 
@@ -33,7 +33,7 @@ wire [4:0]      ex_rd_addr;
 wire [31:0]     ex_rd_data;
 wire            ex_wr_en;
 
-
+assign inst_addr_o = pc_reg_pc_o;   //从外部rom获取指令
 
 ex u_ex(
     .ins_i      (ld_ex_ins      ),
@@ -71,14 +71,14 @@ ld u_ld(
 regs u_regs(
     .clk        (clk        ),
     .rst        (rst        ),
-    .rs1_addr_i (id_ld_rs1_addr ),
-    .rs2_addr_i (id_ld_rs2_addr ),
+    .rs1_addr_i (id_reg_rs1_addr ),
+    .rs2_addr_i (id_reg_rs2_addr ),
     .rs1_data_o (reg_ld_rs1_data ),
     .rs2_data_o (reg_ld_rs2_data ),
-    .wr_en      (wr_en      ),
-    .rd_addr_i  (rd_addr_i  ),
-    .rd_data_i  (rd_data_i  ),
-    .rd_data_o  (rd_data_o  )
+    .wr_en      (ex_wr_en      ),
+    .rd_addr_i  (ex_rd_addr  ),
+    .rd_data_i  (ex_rd_data  )
+    // .rd_data_o  (rd_data_o  )
 );
 
 
@@ -96,6 +96,8 @@ decode u_decode(
 
 
 ins_fetch u_ins_fetch(
+    .clk      (clk      ),
+    .rst      (rst      ),
     .pc_addr_i     (pc_reg_pc_o     ),
     .rom_inst_i    (inst_i    ),
     // .if2rom_addr_o (if2rom_addr_o ),
