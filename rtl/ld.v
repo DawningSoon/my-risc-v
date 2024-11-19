@@ -1,3 +1,5 @@
+`include "ins_defines.v"
+
 module ld (
     input               clk,
     input               rst,
@@ -24,7 +26,7 @@ dff_set
 ins(
     .clk      (clk      ),
     .rst      (rst      ),
-    .set_data (32'b0 ),
+    .set_data (`INST_NOP ),
     .data_i   (ins_i   ),
     .data_o   (ins_o   )
 );

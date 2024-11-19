@@ -1,3 +1,5 @@
+`include "ins_defines.v"
+
 module ins_fetch(
 	input wire 		clk,
 	input wire  	rst,	
@@ -34,7 +36,7 @@ module ins_fetch(
 	ins(
 		.clk      (clk      ),
 		.rst      (rst      ),
-		.set_data (set_data ),
+		.set_data (`INST_NOP ),
 		.data_i   (rom_inst_i   ),
 		.data_o   (inst_o   )
 	);
