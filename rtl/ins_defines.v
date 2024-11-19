@@ -67,3 +67,37 @@
 `define INST_BGE    3'b101
 `define INST_BLTU   3'b110
 `define INST_BGEU   3'b111
+
+// regs
+`define x0 5'd00
+`define x1 5'd01
+`define x2 5'd02
+`define x3 5'd03
+`define x4 5'd04
+`define x5 5'd05
+`define x6 5'd06
+`define x7 5'd07
+`define x8 5'd08
+`define x9 5'd09
+`define x10 5'd10
+`define x11 5'd11
+`define x12 5'd12
+`define x13 5'd13
+`define x14 5'd14
+`define x15 5'd15
+`define x16 5'd16
+`define x17 5'd17
+`define x18 5'd18
+`define x19 5'd19
+`define x20 5'd20
+`define x21 5'd21
+`define x22 5'd22
+`define x23 5'd23
+`define x24 5'd24
+`define x25 5'd25
+`define x26 5'd26
+`define x27 5'd27
+`define x28 5'd28
+`define x29 5'd29
+`define x30 5'd30
+`define x31 5'd31
