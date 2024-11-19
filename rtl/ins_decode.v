@@ -48,6 +48,12 @@ module decode (
                 rd_addr_o = rd;
                 imm_o = 32'b0;
             end
+            `INST_TYPE_B: begin     //B type
+                rs1_addr_o = rs1;
+                rs2_addr_o = rs2;
+                rd_addr_o = `x0;
+                imm_o = 32'b0;
+            end
             default: begin
                 rs1_addr_o = 5'b0;
                 rs2_addr_o = 5'b0;

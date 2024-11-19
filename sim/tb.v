@@ -21,6 +21,7 @@ top u_top(
 initial begin
     clk = 0;
     rst = 1;
+    inst = `INST_NOP;
 
     #100
     rst = 0;
