@@ -78,6 +78,8 @@ ld u_ld(
     .ins_addr_i (id_ld_ins_addr ),
     .rs1_data_i (reg_ld_rs1_data ),
     .rs2_data_i (reg_ld_rs2_data ),
+    .jump_en_i(ctl_jump_en),
+    .hold_flag_i(ctl_hold_flag),
     .ins_o      (ld_ex_ins      ),
     .ins_addr_o (ld_ex_ins_addr ),
     .rs1_data_o (ld_ex_ins_rs1_data ),
@@ -121,6 +123,8 @@ ins_fetch u_ins_fetch(
     .rst      (rst      ),
     .pc_addr_i     (pc_reg_pc_o     ),
     .rom_inst_i    (inst_i    ),
+    .jump_en_i(ctl_jump_en),
+    .hold_flag_i(ctl_hold_flag),
     // .if2rom_addr_o (if2rom_addr_o ),
     .inst_addr_o   (if_id_ins_addr   ),
     .inst_o        (if_id_ins        )

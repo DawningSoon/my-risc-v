@@ -12,6 +12,9 @@ module ld (
     input wire [31:0]   rs1_data_i,
     input wire [31:0]   rs2_data_i,
 
+    input wire          jump_en_i,
+    input wire          hold_flag_i,
+
     output wire [31:0]   ins_o,
     output wire [31:0]   ins_addr_o,
 
@@ -28,6 +31,8 @@ ins(
     .rst      (rst      ),
     .set_data (`INST_NOP ),
     .data_i   (ins_i   ),
+    .jump_en_i(jump_en_i),
+    .hold_flag_i(hold_flag_i),
     .data_o   (ins_o   )
 );
 
@@ -38,6 +43,8 @@ ins_addr(
     .rst      (rst      ),
     .set_data (32'b0 ),
     .data_i   (ins_addr_i   ),
+    .jump_en_i(jump_en_i),
+    .hold_flag_i(hold_flag_i),
     .data_o   (ins_addr_o   )
 );
 
@@ -48,6 +55,8 @@ rs1_data(
     .rst      (rst      ),
     .set_data (32'b0 ),
     .data_i   (rs1_data_i   ),
+    .jump_en_i(jump_en_i),
+    .hold_flag_i(hold_flag_i),
     .data_o   (rs1_data_o   )
 );
 
@@ -58,6 +67,8 @@ rs2_data(
     .rst      (rst      ),
     .set_data (32'b0 ),
     .data_i   (rs2_data_i   ),
+    .jump_en_i(jump_en_i),
+    .hold_flag_i(hold_flag_i),
     .data_o   (rs2_data_o   )
 );
 

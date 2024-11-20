@@ -9,6 +9,9 @@ module ins_fetch(
 	input  wire[31:0] rom_inst_i,
 	//to rom
 	// output wire[31:0] if2rom_addr_o, 
+
+	input wire          jump_en_i,
+    input wire          hold_flag_i,
 	// to if_id
 	output wire[31:0] inst_addr_o, 
 	output wire[31:0] inst_o
@@ -28,6 +31,9 @@ module ins_fetch(
 		.rst      (rst      ),
 		.set_data (32'b0 ),
 		.data_i   (pc_addr_i   ),
+
+		.jump_en_i(jump_en_i),
+		.hold_flag_i(hold_flag_i),
 		.data_o   (inst_addr_o   )
 	);
 
@@ -38,6 +44,8 @@ module ins_fetch(
 		.rst      (rst      ),
 		.set_data (`INST_NOP ),
 		.data_i   (rom_inst_i   ),
+		.jump_en_i(jump_en_i),
+		.hold_flag_i(hold_flag_i),
 		.data_o   (inst_o   )
 	);
 	

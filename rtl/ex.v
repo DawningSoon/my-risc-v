@@ -127,6 +127,15 @@ always @(*) begin
             endcase
         end
 
+        `INST_JAL: begin
+            rd_addr_o = rd;
+            rd_data_o = ins_addr_i + 32'h4;
+            rd_wr_en = 1'b1;
+            jump_addr_o = ins_addr_i + imm_J;
+            jump_en_o = 1'b1;
+            hold_flag_o = 1'b0;
+        end
+
         default: begin
             rd_data_o = 32'b0;
             rd_addr_o = 5'b0;
