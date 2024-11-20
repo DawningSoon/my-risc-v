@@ -33,7 +33,25 @@ wire [4:0]      ex_rd_addr;
 wire [31:0]     ex_rd_data;
 wire            ex_wr_en;
 
+wire [31:0]     ex_ctl_jump_addr;
+wire            ex_ctl_jump_en;
+wire            ex_ctl_hold_flag;
+
+wire [31:0]     ctl_jump_addr;
+wire            ctl_jump_en;
+wire            ctl_hold_flag;
+
 assign inst_addr_o = pc_reg_pc_o;   //从外部rom获取指令
+
+ctrl u_ctrl(
+    .jump_addr_i (ex_ctl_jump_addr ),
+    .jump_en_i   (ex_ctl_jump_en   ),
+    .hold_flag_i (ex_ctl_hold_flag ),
+    .jump_addr_o (ctl_jump_addr ),
+    .jump_en_o   (ctl_jump_en   ),
+    .hold_flag_o (ctl_hold_flag )
+);
+
 
 ex u_ex(
     .ins_i      (ld_ex_ins      ),
@@ -44,7 +62,10 @@ ex u_ex(
     .rs2_data_i (ld_ex_ins_rs2_data ),
     .rd_addr_o  (ex_rd_addr  ),
     .rd_data_o  (ex_rd_data  ),
-    .rd_wr_en   (ex_wr_en   )
+    .rd_wr_en   (ex_wr_en   ),
+    .jump_addr_o(ex_ctl_jump_addr),
+    .jump_en_o  (ex_ctl_jump_en),
+	.hold_flag_o(ex_ctl_hold_flag)
 );
 
 
@@ -111,6 +132,9 @@ ins_fetch u_ins_fetch(
 pc_reg u_pc_reg(
     .clk (clk ),
     .rst (rst ),
+    .jump_addr_i(ctl_jump_addr),
+    .jump_en_i(ctl_jump_en),
+    .hold_flag_i(ctl_hold_flag),
     .pc  (pc_reg_pc_o  )
 );
 
