@@ -47,15 +47,81 @@ assign func7  = ins_i[31:25];
 
 always @(*) begin
     case (opcode)
-        `INST_TYPE_I:begin
+
+        //I type
+
+        `INST_TYPE_I:begin      
             jump_addr_o = 32'b0;
             jump_en_o	= 1'b0;
             hold_flag_o = 1'b0;	
             case(func3)
-                `INST_ADDI:begin
+                `INST_ADDI:begin        //addi
                     rd_data_o = rs1_data_i + imm_I;
                     rd_addr_o = rd;
                     rd_wr_en  = 1'b1;
+                end
+                `INST_SLTI:begin        //signed compare
+                    if((rs1_data_i - imm_I) > 32'h8000_0000)begin       //rs1-imm<0
+                        rd_data_o = 32'h1;
+                        rd_addr_o = rd;
+                        rd_wr_en  = 1'b1;
+                    end
+                    else begin
+                        rd_data_o = 32'h0;
+                        rd_addr_o = rd;
+                        rd_wr_en  = 1'b1;
+                    end
+                end
+                `INST_SLTIU: begin      //unsigned compare
+                    if(rs1_data_i < imm_I)begin       //rs1<imm
+                        rd_data_o = 32'h1;
+                        rd_addr_o = rd;
+                        rd_wr_en  = 1'b1;
+                    end
+                    else begin
+                        rd_data_o = 32'h0;
+                        rd_addr_o = rd;
+                        rd_wr_en  = 1'b1;
+                    end
+                end
+                `INST_ANDI: begin       //andi
+                    rd_data_o = rs1_data_i & imm_I;
+                    rd_addr_o = rd;
+                    rd_wr_en  = 1'b1;
+                end
+                `INST_ORI: begin        //ori
+                    rd_data_o = rs1_data_i | imm_I;
+                    rd_addr_o = rd;
+                    rd_wr_en  = 1'b1;
+                end
+                `INST_XORI: begin       //xori
+                    rd_data_o = rs1_data_i ^ imm_I;
+                    rd_addr_o = rd;
+                    rd_wr_en  = 1'b1;
+                end
+                `INST_SLLI: begin       //SLLI
+                    rd_data_o = rs1_data_i << imm_I[4:0];
+                    rd_addr_o = rd;
+                    rd_wr_en  = 1'b1;
+                end
+                `INST_SRI: begin
+                    case (func7)
+                        7'b0: begin     //SRLI
+                            rd_data_o = rs1_data_i >> imm_I[4:0];
+                            rd_addr_o = rd;
+                            rd_wr_en  = 1'b1;
+                        end
+                        7'b0100000: begin   //SRAI
+                            rd_data_o = (rs1_data_i >>> imm_I[4:0]) | ({32{rs1_data_i[31]}} & ~(32'hFFFF_FFFF >> imm_I[4:0]));
+                            rd_addr_o = rd;
+                            rd_wr_en  = 1'b1;
+                        end 
+                        default: begin  
+                            rd_data_o = 32'b0;
+                            rd_addr_o = 5'b0;
+                            rd_wr_en  = 1'b0;
+                        end
+                    endcase
                 end
                 default:begin
                     rd_data_o = 32'b0;
@@ -64,6 +130,29 @@ always @(*) begin
                 end
             endcase
         end
+
+        `INST_LUI: begin        //lui
+            jump_addr_o = 32'b0;
+            jump_en_o	= 1'b0;
+            hold_flag_o = 1'b0;
+
+            rd_data_o = imm_U;
+            rd_addr_o = rd;
+            rd_wr_en = 1'b1;	
+
+         end
+
+        `INST_AUIPC: begin      //AUIPC
+            jump_addr_o = 32'b0;
+            jump_en_o	= 1'b0;
+            hold_flag_o = 1'b0;
+
+            rd_data_o = ins_addr_i + imm_U;
+            rd_addr_o = rd;
+            rd_wr_en = 1'b1;
+        end
+
+        //R type
 
         `INST_TYPE_R_M: begin
             jump_addr_o = 32'b0;
@@ -90,15 +179,7 @@ always @(*) begin
             endcase
         end
 
-    `INST_LUI: begin
-        jump_addr_o = 32'b0;
-        jump_en_o	= 1'b0;
-        hold_flag_o = 1'b0;
-        rd_data_o = imm_U;
-        rd_addr_o = rd;
-        rd_wr_en = 1'b1;	
 
-    end
 
 
         `INST_TYPE_B: begin
