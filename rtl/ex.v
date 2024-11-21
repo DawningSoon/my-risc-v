@@ -61,7 +61,7 @@ always @(*) begin
                     rd_wr_en  = 1'b1;
                 end
                 `INST_SLTI:begin        //signed compare
-                    if((rs1_data_i - imm_I) > 32'h8000_0000)begin       //rs1-imm<0
+                    if((rs1_data_i[31] > imm_I[31]) ||  ((rs1_data_i [30:0] < imm_I[30:0]) && (rs1_data_i[31] == imm_I[31])))begin  
                         rd_data_o = 32'h1;
                         rd_addr_o = rd;
                         rd_wr_en  = 1'b1;
