@@ -45,6 +45,8 @@ assign func7  = ins_i[31:25];
 // assign imm_I 
 // assign imm    = ins_i[31:20];
 
+wire [31:0] temp = rs1_data_i + imm_I;
+
 always @(*) begin
     case (opcode)
 
@@ -280,21 +282,34 @@ always @(*) begin
             endcase
         end
 
-        `INST_JAL: begin
+        `INST_JAL: begin        //jal
             rd_addr_o = rd;
             rd_data_o = ins_addr_i + 32'h4;
             rd_wr_en = 1'b1;
+
             jump_addr_o = ins_addr_i + imm_J;
+            jump_en_o = 1'b1;
+            hold_flag_o = 1'b0;
+        end
+
+        `INST_JALR: begin       //jalr
+            rd_addr_o = rd;
+            rd_data_o = ins_addr_i + 32'h4;
+            rd_wr_en = 1'b1;
+
+            // jump_addr_o = (rs1_data_i + imm_I) & ~(32'h1);
+            // jump_addr_o = 32'h20;
+            jump_addr_o = temp;
             jump_en_o = 1'b1;
             hold_flag_o = 1'b0;
         end
 
         default: begin
             rd_data_o = 32'b0;
-            rd_addr_o = 5'b0;
+            rd_addr_o = `x0;
             rd_wr_en  = 1'b0;
 
-            jump_addr_o = `x0;
+            jump_addr_o = 32'b0;
             jump_en_o	= 1'b0;
             hold_flag_o = 1'b0;
         end
