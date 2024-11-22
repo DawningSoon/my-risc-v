@@ -51,7 +51,7 @@ always @(*) begin
         //I type
 
         `INST_TYPE_I:begin      
-            jump_addr_o = 32'b0;
+            jump_addr_o = `x0;
             jump_en_o	= 1'b0;
             hold_flag_o = 1'b0;	
             case(func3)
@@ -165,11 +165,79 @@ always @(*) begin
                         rd_addr_o = rd;
                         rd_wr_en = 1'b1;
                     end
-                    else begin
+                    else if(func7 == 7'b010_0000)begin  //sub
                         rd_data_o = rs1_data_i - rs2_data_i;
                         rd_addr_o = rd;
                         rd_wr_en = 1'b1;
                     end
+                    else begin
+                        rd_data_o = 32'b0;
+                        rd_addr_o = `x0;
+                        rd_wr_en  = 1'b0;
+                    end
+                end
+                `INST_SLL: begin        //sll
+                    rd_data_o = rs1_data_i << rs2_data_i[4:0];
+                    rd_addr_o = rd;
+                    rd_wr_en = 1'b1;
+                end
+                `INST_SLT: begin        //slt signed compare
+                    if((rs1_data_i[31] > rs2_data_i[31]) ||  ((rs1_data_i[31] == rs2_data_i[31])) && (rs1_data_i [30:0] < rs2_data_i[30:0]))begin  
+                        rd_data_o = 32'h1;
+                        rd_addr_o = rd;
+                        rd_wr_en  = 1'b1;
+                    end
+                    else begin
+                        rd_data_o = 32'h0;
+                        rd_addr_o = rd;
+                        rd_wr_en  = 1'b1;
+                    end
+                end
+                `INST_SLTU: begin       //sltu unsigned compare
+                    if(rs1_data_i < rs2_data_i)begin       //rs1<imm
+                        rd_data_o = 32'h1;
+                        rd_addr_o = rd;
+                        rd_wr_en  = 1'b1;
+                    end
+                    else begin
+                        rd_data_o = 32'h0;
+                        rd_addr_o = rd;
+                        rd_wr_en  = 1'b1;
+                    end
+                end
+                `INST_XOR: begin        //xor
+                    rd_data_o = rs1_data_i ^ rs2_data_i;
+                    rd_addr_o = rd;
+                    rd_wr_en  = 1'b1;
+                end
+                `INST_SR: begin
+                    case (func7)
+                        7'b0:begin      //srl logical
+                            rd_data_o = rs1_data_i >> rs2_data_i[4:0];
+                            rd_addr_o = rd;
+                            rd_wr_en  = 1'b1;
+                        end 
+                        7'b010_0000: begin      //sra 
+                            rd_data_o = (rs1_data_i >> rs2_data_i[4:0]) | ({32{rs1_data_i[31]}} & ~(32'hFFFF_FFFF >> rs2_data_i[4:0]));
+                            rd_addr_o = rd;
+                            rd_wr_en  = 1'b1;
+                        end
+                        default: begin
+                            rd_data_o = 32'b0;
+                            rd_addr_o = `x0;
+                            rd_wr_en  = 1'b0;
+                        end
+                    endcase
+                end
+                `INST_OR: begin     //or
+                    rd_data_o = rs1_data_i | rs2_data_i;
+                    rd_addr_o = rd;
+                    rd_wr_en  = 1'b1;
+                end
+                `INST_AND: begin        //and
+                    rd_data_o = rs1_data_i & rs2_data_i;
+                    rd_addr_o = rd;
+                    rd_wr_en  = 1'b1;
                 end
                 default:begin
                     rd_data_o = 32'b0;
@@ -225,6 +293,10 @@ always @(*) begin
             rd_data_o = 32'b0;
             rd_addr_o = 5'b0;
             rd_wr_en  = 1'b0;
+
+            jump_addr_o = `x0;
+            jump_en_o	= 1'b0;
+            hold_flag_o = 1'b0;
         end
     endcase
 end
