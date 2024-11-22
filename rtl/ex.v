@@ -86,13 +86,6 @@ assign addr_dest = addr_base + addr_offset;
 
 
 
-// assign imm_I 
-// assign imm    = ins_i[31:20];
-
-
-
-
-
 always @(*) begin
     rd_addr_o = rd;
     case (opcode)
