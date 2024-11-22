@@ -260,7 +260,7 @@ always @(*) begin
             rd_wr_en  = 1'b0;
 
             case (func3)
-                `INST_BEQ: begin
+                `INST_BEQ: begin        //beq
                     if(rs1_data_i == rs2_data_i)begin
                         jump_addr_o = ins_addr_i + imm_B;
                         jump_en_o	= 1'b1;
@@ -268,7 +268,7 @@ always @(*) begin
                         	
                     end
                 end
-                `INST_BNE: begin
+                `INST_BNE: begin        //bne
                     if(rs1_data_i != rs2_data_i)begin
                         jump_addr_o = ins_addr_i + imm_B;
                         jump_en_o	= 1'b1;
@@ -276,6 +276,34 @@ always @(*) begin
                         
                     end
                 end
+                `INST_BLT: begin        //blt signed
+                    if(rs1_data_i[31] != rs2_data_i[31]? rs1_data_i[31]:(rs1_data_i < rs2_data_i))begin
+                        jump_addr_o = ins_addr_i + imm_B;
+                        jump_en_o	= 1'b1;
+                        hold_flag_o = 1'b0;
+                    end
+                end
+                `INST_BLTU: begin       //bltu unsigned
+                    if(rs1_data_i < rs2_data_i)begin
+                        jump_addr_o = ins_addr_i + imm_B;
+                        jump_en_o	= 1'b1;
+                        hold_flag_o = 1'b0;
+                    end
+                end
+                `INST_BGE: begin        //bge signed
+                    if(~(rs1_data_i[31] != rs2_data_i[31]? rs1_data_i[31]:(rs1_data_i < rs2_data_i)))begin
+                        jump_addr_o = ins_addr_i + imm_B;
+                        jump_en_o	= 1'b1;
+                        hold_flag_o = 1'b0;
+                    end
+                end
+                `INST_BGEU: begin       //bgeu unsigned
+                    if(rs1_data_i >= rs2_data_i) begin
+                        jump_addr_o = ins_addr_i + imm_B;
+                        jump_en_o	= 1'b1;
+                        hold_flag_o = 1'b0;
+                    end
+                end 
                 default: begin
                     jump_addr_o = 32'b0;
                     jump_en_o	= 1'b0;
