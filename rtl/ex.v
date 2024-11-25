@@ -452,7 +452,7 @@ always @(*) begin
                     ram_size_o = 3'd2;
                     // ram_rd_en = 1'b1;
                     op1_reg= {16'h0, ram_data_i[15:0]};
-                    op2_reg = {{16{ram_data_i[7]}}, 16'h0000};
+                    op2_reg = {{16{ram_data_i[15]}}, 16'h0000};
                     // rd_data_o = op1_and_op2;
                 end
                 `INST_LW: begin
