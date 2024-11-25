@@ -9,13 +9,15 @@ module ram (
 
     input wire [31:0]   wd_addr_i,
     input wire          wd_en,
-    input wire [4:0]    wd_size_i,
+    input wire [2:0]    wd_size_i,
     input wire [31:0]   wd_data_i
 );
 
-reg[7:0] ram_mem[0:4095];  //4096 个 8b的 空间
+reg[7:0] ram_mem[0:8192];  //4096 个 8b的 空间
 
 reg [31:0] data_temp;
+
+reg         wd_en_reg;
 
 
 always @(*) begin
@@ -43,6 +45,10 @@ always @(*) begin
 end
 
 always @(posedge clk) begin
+    wd_en_reg <= wd_en;
+end
+
+always @(*) begin
     if(wd_en)begin
         case (wd_size_i)
             3'd1: begin     //8bit

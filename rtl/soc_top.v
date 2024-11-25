@@ -54,6 +54,7 @@ ctrl u_ctrl(
 
 
 ex u_ex(
+    .clk        (clk),
     .ins_i      (ld_ex_ins      ),
     .ins_addr_i (ld_ex_ins_addr ),
     .ins_o      (ex_o_ins      ),
