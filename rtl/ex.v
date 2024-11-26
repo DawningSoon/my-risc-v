@@ -466,14 +466,14 @@ always @(*) begin
                     ram_size_o = 3'd1;
                     // ram_rd_en = 1'b1;
                     op1_reg = {24'h0, ram_data_i[7:0]};
-                    op2_reg = {24'h0, 8'h00};
+                    op2_reg = 32'h0;
                     // rd_data_o = op1_and_op2;
                 end
                 `INST_LHU: begin
                     ram_size_o = 3'd2;
                     // ram_rd_en = 1'b1;
                     op1_reg = {16'h0, ram_data_i[15:0]};
-                    op2_reg = {16'h0, 16'h0000};
+                    op2_reg = 32'h0; 
                     // rd_data_o = op1_and_op2;
                 end
                 default: begin

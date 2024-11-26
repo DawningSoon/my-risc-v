@@ -57,7 +57,8 @@ module decode (
                 rs2_addr_o = `x0;
             end
             `INST_TYPE_L: begin
-                
+                rs1_addr_o = rs1;
+                rs2_addr_o = `x0;
             end
             `INST_TYPE_S: begin
                 rs1_addr_o = rs1;
