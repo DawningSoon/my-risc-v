@@ -8,3 +8,5 @@
 2024/11/20 完成branch与立即数拓展
 
 2024/11/22 complete I/R/J/B type instructions
+
+2024/11/26 简单完成load/store指令，以后有空想实现axi总线的挂载
