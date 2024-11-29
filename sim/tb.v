@@ -21,7 +21,7 @@ wire [31:0]x27= tb.u_top.u_regs.regs[27];
 
 initial begin
 
-    $readmemh("E:/file/my-risc-v/sim/inst_txt/rv32ui-p-lw.txt",tb.u_rom.rom_mem);     //烧录指令
+    $readmemh("E:/file/my-risc-v/sim/inst_txt/rv32um-p-mulhsu.txt",tb.u_rom.rom_mem);     //烧录指令
 
     clk = 1;
     rst = 1;

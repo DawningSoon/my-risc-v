@@ -4,6 +4,7 @@
 module ex (
 
     input clk,
+    input rst,
 
     input wire [31:0] ins_i,
     input wire [31:0] ins_addr_i,
@@ -40,6 +41,13 @@ assign func3  = ins_i[14:12];
 assign rs1 	  = ins_i[19:15];
 assign rs2 	  = ins_i[24:20];
 assign func7  = ins_i[31:25];
+
+reg [31:0] ram_addr_o;
+reg        ram_wd_en;
+reg        ram_rd_en;
+reg [2:0]  ram_size_o;
+wire [31:0] ram_data_i;
+reg [31:0] ram_data_o;
 
 //ALU
 wire[31:0] imm_I= {{21{ins_i[31]}}, ins_i[30:20]};
@@ -91,15 +99,21 @@ reg  [31:0] addr_offset;
 assign addr_dest = addr_base + addr_offset;
 
 
- 
+wire [31:0] op1_mul_op2;
+wire [31:0] op1_mul_op2_h;
+reg  mul_en;
 
 
-reg [31:0] ram_addr_o;
-reg        ram_wd_en;
-reg        ram_rd_en;
-reg [2:0]  ram_size_o;
-wire [31:0] ram_data_i;
-reg [31:0] ram_data_o;
+mul u_mul(
+    .rst             (rst             ),
+    .op1             (op1_reg             ),
+    .op2             (op2_reg             ),
+    .func3           (func3           ),
+    .mul_en          (mul_en          ),
+    .op1_mul_op2_o   (op1_mul_op2   ),
+    .op1_mul_op2_h_o (op1_mul_op2_h )
+);
+
 
 
 
@@ -118,6 +132,8 @@ always @(*) begin
             ram_data_o = 32'h0;
             ram_size_o = 4'd0;
             ram_wd_en = 1'h0;
+
+            mul_en = 1'b0;
 
             op1_reg = rs1_data_i;
             op2_reg = imm_I;
@@ -188,6 +204,8 @@ always @(*) begin
             ram_size_o = 3'd0;
             ram_wd_en = 1'h0;
 
+            mul_en = 1'b0;
+
             rd_data_o = imm_U;
             rd_addr_o = rd;
             rd_wr_en = 1'b1;	
@@ -203,6 +221,8 @@ always @(*) begin
             ram_data_o = 32'h0;
             ram_size_o = 3'd0;
             ram_wd_en = 1'h0;
+
+            mul_en = 1'b0;
 
             addr_base = ins_addr_i;
             addr_offset = imm_U;
@@ -228,69 +248,84 @@ always @(*) begin
 
             rd_addr_o = rd;
 
-            case(func3)
-                `INST_ADD_SUB: begin
-                    if(func7 == 7'b000_0000)begin//add
-                        rd_data_o = op1_add_op2;
-                        
-                    end
-                    else if(func7 == 7'b010_0000)begin  //sub
-                        rd_data_o = op1_sub_op2;
-                        
-                    end
-                    else begin
-                        rd_data_o = 32'b0;
-                        rd_addr_o = `x0;
-                        rd_wr_en  = 1'b0;
-                    end
-                end
-                `INST_SLL: begin        //sll
-                    rd_data_o = op1_sll_op2;
-                    
-                end
-                `INST_SLT: begin        //slt signed compare
-                    
-                    rd_data_o = op1_signed_comp_op2;
-                end
-                `INST_SLTU: begin       //sltu unsigned compare
-                    
-                    rd_data_o = op1_unsigned_comp_op2;
-                end
-                `INST_XOR: begin        //xor
-                    rd_data_o = op1_xor_op2;
-                    
-                end
-                `INST_SR: begin
-                    case (func7)
-                        7'b0:begin      //srl logical
-                            rd_data_o = op1_srl_op2;
-                            
-                        end 
-                        7'b010_0000: begin      //sra 
-                            rd_data_o = op1_sra_op2;
+            
+            if(func7 == 7'b000_0000 || func7 == 7'b010_0000)begin
+                mul_en = 1'b0;
+            
+                case(func3)
+                    `INST_ADD_SUB: begin
+                        if(func7 == 7'b000_0000)begin//add
+                            rd_data_o = op1_add_op2;
                             
                         end
-                        default: begin
+                        else if(func7 == 7'b010_0000)begin  //sub
+                            rd_data_o = op1_sub_op2;
+                            
+                        end
+                        else begin
                             rd_data_o = 32'b0;
                             rd_addr_o = `x0;
                             rd_wr_en  = 1'b0;
                         end
-                    endcase
-                end
-                `INST_OR: begin     //or
-                    rd_data_o = op1_or_op2;
+                    end
+                    `INST_SLL: begin        //sll
+                        rd_data_o = op1_sll_op2;
+                        
+                    end
+                    `INST_SLT: begin        //slt signed compare
+                        
+                        rd_data_o = op1_signed_comp_op2;
+                    end
+                    `INST_SLTU: begin       //sltu unsigned compare
+                        
+                        rd_data_o = op1_unsigned_comp_op2;
+                    end
+                    `INST_XOR: begin        //xor
+                        rd_data_o = op1_xor_op2;
+                        
+                    end
+                    `INST_SR: begin
+                        case (func7)
+                            7'b0:begin      //srl logical
+                                rd_data_o = op1_srl_op2;
+                                
+                            end 
+                            7'b010_0000: begin      //sra 
+                                rd_data_o = op1_sra_op2;
+                                
+                            end
+                            default: begin
+                                rd_data_o = 32'b0;
+                                rd_addr_o = `x0;
+                                rd_wr_en  = 1'b0;
+                            end
+                        endcase
+                    end
+                    `INST_OR: begin     //or
+                        rd_data_o = op1_or_op2;
+                        
+                    end
+                    `INST_AND: begin        //and
+                        rd_data_o = op1_and_op2;
                     
-                end
-                `INST_AND: begin        //and
-                    rd_data_o = op1_and_op2;
-                   
-                end
-                default:begin
-                    rd_data_o = 32'b0;
-                    rd_addr_o = `x0;
-                    rd_wr_en  = 1'b0;
-                end
-            endcase
+                    end
+                    default:begin
+                        rd_data_o = 32'b0;
+                        rd_addr_o = `x0;
+                        rd_wr_en  = 1'b0;
+                    end
+                endcase
+                
+            end
+            else if(func7 == 7'b1)begin
+                 if(func3[2] == 0)begin     //mul
+                    mul_en = 1'b1;
+                    rd_data_o = func3 == 3'h0 ? op1_mul_op2 : op1_mul_op2_h;
+                 end
+                 else if (func3[2] == 1) begin      //div
+                    mul_en = 1'b0;
+                 end
+            end
             rd_wr_en = 1'b1;
         end
 
