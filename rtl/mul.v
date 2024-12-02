@@ -39,6 +39,7 @@ always @(*) begin
         end
         else cal = 1'b0;
     end
+    else cal = 1'b0;
 end
 
 always @(*) begin
