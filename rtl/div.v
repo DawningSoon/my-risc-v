@@ -12,13 +12,21 @@ module div (
     output reg [31:0]   op1_div_op2,
     output reg [31:0]   op1_div_op2_rem,
 
-    output reg          div_busy
+    output reg          busy,
+    output reg          ready,
+    output reg          wd_en
 );
 
 reg [2:0]   func3_reg;
 reg         cal;
 reg [31:0]  op1_reg;
 reg [31:0]  op2_reg;
+
+reg [3:0]   state;
+localparam IDLE     = 4'b0000;
+localparam START    = 4'b0001;
+localparam CALC     = 4'b0100;
+localparam FIN      = 4'b1000;
 
 
 
@@ -54,13 +62,22 @@ always @(*) begin
                 op2_reg = op2[31]? op2_invert: op2;
             end
             `INST_DIVU, `INST_REMU: begin
-                
+                op1_reg = op1;
+                op2_reg = op2;
             end
             default: begin
                 
             end
         endcase
     end
+end
+
+reg [31:0]   rem_temp;
+reg [31:0]   dividend_temp;
+reg [31:0]   divisor_temp;
+
+always @(posedge clk) begin
+    
 end
     
 endmodule
