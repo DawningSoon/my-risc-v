@@ -32,6 +32,28 @@ localparam FIN      = 4'b1000;
 
 reg         neg;
 
+reg signed [31:0]   rem_temp;
+reg [31:0]   dividend_temp;
+reg [31:0]   divisor_temp;
+
+reg [4:0]    round;
+
+always @(*) begin
+    if(rst)begin
+        state = IDLE;
+    end
+    else begin
+        case (state)
+            IDLE: begin
+                state = cal? START : IDLE;
+            end 
+            START: begin
+                // if(dividend_temp >=0)
+            end
+            default: state = state;
+        endcase
+    end
+end
 //ALU
 wire [31:0] op1_invert = ~op1 +1;
 wire [31:0] op2_invert = ~op2 +1;
@@ -47,34 +69,32 @@ always @(*) begin
     else cal = 1'b0;
 end
 
-always @(*) begin
-    if(rst)begin
-        op1_reg = 32'b0;
-        op2_reg = 32'b0;
-        func3_reg = 3'b000;
-    end
-    else if(div_en)begin
-        func3_reg = func3;
-        case (func3)
-            `INST_DIV, `INST_REM: begin
-                neg = op1[31] != op2[31];
-                op1_reg = op1[31]? op1_invert: op1;
-                op2_reg = op2[31]? op2_invert: op2;
-            end
-            `INST_DIVU, `INST_REMU: begin
-                op1_reg = op1;
-                op2_reg = op2;
-            end
-            default: begin
+// always @(*) begin
+//     if(rst)begin
+//         op1_reg = 32'b0;
+//         op2_reg = 32'b0;
+//         func3_reg = 3'b000;
+//     end
+//     else if(div_en)begin
+//         func3_reg = func3;
+//         case (func3)
+//             `INST_DIV, `INST_REM: begin
+//                 neg = op1[31] != op2[31];
+//                 op1_reg = op1[31]? op1_invert: op1;
+//                 op2_reg = op2[31]? op2_invert: op2;
+//             end
+//             `INST_DIVU, `INST_REMU: begin
+//                 op1_reg = op1;
+//                 op2_reg = op2;
+//             end
+//             default: begin
                 
-            end
-        endcase
-    end
-end
+//             end
+//         endcase
+//     end
+// end
 
-reg [31:0]   rem_temp;
-reg [31:0]   dividend_temp;
-reg [31:0]   divisor_temp;
+
 
 always @(posedge clk) begin
     
