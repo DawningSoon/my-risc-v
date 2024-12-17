@@ -19,6 +19,9 @@ reg [15:0] output_temp;
 reg [7:0] dividend_reg;
 reg [7:0] divisor_reg;
 
+wire [7:0] dividend_abs = dividend_reg[7]? (~dividend_reg+1): dividend_reg;
+wire [7:0] divisor_abs = divisor_reg[7]? (~divisor_reg +1): divisor_reg;
+
 reg [3:0] round;
 
 reg [2:0] state;
@@ -28,7 +31,7 @@ localparam CALC     = 3'b010;
 localparam FIN      = 3'b100;
 
 reg cal;
-reg inv;
+reg [1:0] inv;
 
 always @(posedge clk or rst) begin
     if(rst) begin
@@ -61,7 +64,7 @@ always @(*) begin   //start
             // rem_temp = 0;
             // output_o = 0;
             round = 0;
-            inv = ~(dividend_i[7] == divisor_i[7]);
+            inv = {dividend_i[7] , divisor_i[7]};
             dividend_reg = dividend_i;
             divisor_reg = divisor_i;
             if(dividend_i[7]) 
@@ -112,14 +115,32 @@ end
 
 always @(*) begin
     if(state == FIN)begin
-        if(inv)begin
-            
-        end
-       
         output_temp[0] = rem_temp[7]? 0: 1;
-        output_o = inv? ~output_temp +1: output_temp;
+        rem_temp = rem_temp[7]? (rem_temp[7:0]+divisor_abs): rem_temp[7:0];
+        case (inv)
+            2'b00: begin
+                output_o = output_temp;
+                rem_o = rem_temp;
+            end
+            2'b01: begin
+                output_o = ~output_temp +1;
+                rem_o = rem_temp;
+            end
+            2'b10: begin
+                output_o = ~output_temp;
+                rem_o = divisor_abs - rem_temp;
+            end
+            2'b11: begin
+                output_o = output_temp +1;
+                rem_o = divisor_abs - rem_temp;
+            end
+            default: ;
+        endcase
+       
+        
+        // output_o = inv? ~output_temp +1: output_temp;
 
-        rem_o = rem_temp[7]? (rem_temp[7:0]+divisor_i): rem_temp[7:0] ;
+        // rem_o = rem_temp[7]? (rem_temp[7:0]+divisor_abs): rem_temp[7:0] ;
     end
 end
     
