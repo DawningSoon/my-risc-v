@@ -14,6 +14,10 @@ module div_test (
 reg [15:0] dividend_temp;
 reg [15:0] divisor_temp;
 reg [15:0] rem_temp;
+reg [15:0] output_temp;
+
+reg [7:0] dividend_reg;
+reg [7:0] divisor_reg;
 
 reg [3:0] round;
 
@@ -34,7 +38,7 @@ always @(posedge clk or rst) begin
         case (state)
             IDLE: state <= div_en? START: IDLE; 
             START: state <= CALC;
-            CALC: state <= (round == 4'd8)? FIN: CALC;
+            CALC: state <= (round == 4'd7)? FIN: CALC;
             FIN: state <= IDLE;
             default: state <= state;
         endcase
@@ -47,21 +51,27 @@ always @(*) begin   //start
         divisor_temp = 0;
         rem_temp = 0;
         round = 0;
-        output_o = 0;
+        // output_temp = 0;
         rem_o = 0;
         inv = 0;
     end
     else begin
         if(state == START)begin
-            rem_o = 0;
-            rem_temp = 0;
-            output_o = 0;
+            // rem_o = 0;
+            // rem_temp = 0;
+            // output_o = 0;
             round = 0;
-            inv = dividend_i[7] == divisor_i[7];
-            if(dividend_i[7]) dividend_temp ={8'h00,(~dividend_i +1)};
-            else dividend_temp ={8'h00,dividend_i};
-            if(divisor_i[7]) divisor_temp ={(~divisor_i +1),8'h00};
-            else divisor_temp ={divisor_i,8'h00};
+            inv = ~(dividend_i[7] == divisor_i[7]);
+            dividend_reg = dividend_i;
+            divisor_reg = divisor_i;
+            if(dividend_i[7]) 
+                dividend_temp ={8'h00,(~dividend_i +1)};
+            else 
+                dividend_temp ={8'h00,dividend_i};
+            if(divisor_i[7]) 
+                divisor_temp ={(~divisor_i +1),8'h00};
+            else 
+                divisor_temp ={divisor_i,8'h00};
             rem_temp = dividend_temp - divisor_temp;
             divisor_temp = divisor_temp >>1;
         end
@@ -74,9 +84,9 @@ always @(posedge clk) begin
         divisor_temp <= 0;
         rem_temp <= 0;
         round <= 0;
-        output_o <= 0;
+        output_temp <= 0;
         rem_o <= 0;
-        inv <= 0;
+        // inv <= 0;
     end
     else begin
         if(state == CALC)begin
@@ -84,12 +94,12 @@ always @(posedge clk) begin
                 
                 if(rem_temp <= 8'b0111_1111) begin
                     rem_temp <= rem_temp - divisor_temp;
-                    output_o[8-round] <= 1;
+                    output_temp[8-round] <= 1;
                 end
                 
                 else begin
                     rem_temp <= rem_temp + divisor_temp;
-                    output_o[8-round] <= 0;
+                    output_temp[8-round] <= 0;
                     
                 end
                 divisor_temp <= divisor_temp >>1;
@@ -105,8 +115,11 @@ always @(*) begin
         if(inv)begin
             
         end
+       
+        output_temp[0] = rem_temp[7]? 0: 1;
+        output_o = inv? ~output_temp +1: output_temp;
+
         rem_o = rem_temp[7]? (rem_temp[7:0]+divisor_i): rem_temp[7:0] ;
-        output_o[0] = rem_temp[7]? 0: 1;
     end
 end
     
