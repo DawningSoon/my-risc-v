@@ -1,34 +1,37 @@
 `timescale 1ns/1ps
 
-module div_test (
+module div_test #
+(parameter DW = 6'd32)
+(
     input clk,
     input rst,
-    input wire [7:0] dividend_i,
-    input wire [7:0] divisor_i,
+    input wire [DW -1:0] dividend_i,
+    input wire [DW -1:0] divisor_i,
     input wire div_en,
     input wire signed_i,
 
-    output reg [7:0] output_o,
-    output reg [7:0] rem_o,
-    output reg wd_en
+    output reg [DW -1:0] output_o,
+    output reg [DW -1:0] rem_o,
+    output reg wd_en,
+    output reg busy_o
 );
 
 // reg [15:0] dividend_temp;
-reg [16:0] divisor_temp;
-reg [16:0] rem_temp;
-reg [8:0] output_temp;
+reg [2*DW:0] divisor_temp;
+reg [2*DW:0] rem_temp;
+reg [DW:0] output_temp;
 
-reg [7:0] dividend_reg;
-reg [7:0] divisor_reg;
+reg [DW -1:0] dividend_reg;
+reg [DW -1:0] divisor_reg;
 
-wire [7:0] dividend_abs;
-wire [7:0] divisor_abs;
+wire [DW -1:0] dividend_abs;
+wire [DW -1:0] divisor_abs;
 
-assign dividend_abs = dividend_reg[7]? (~dividend_reg+1): dividend_reg;
-assign divisor_abs = divisor_reg[7]? (~divisor_reg +1): divisor_reg;
+assign dividend_abs = dividend_reg[DW -1]? (~dividend_reg+1): dividend_reg;
+assign divisor_abs = divisor_reg[DW -1]? (~divisor_reg +1): divisor_reg;
 
 
-reg [3:0] round;
+reg [5:0] round;
 
 reg [2:0] state;
 reg [2:0] next_state;
@@ -62,7 +65,7 @@ always @(*) begin
                 // next_state =  div_en? START: IDLE;
             end
             START: next_state = cal? CALC: FIN;
-            CALC: next_state = (round >= 4'd7)? FIN: CALC;
+            CALC: next_state = (round >= 6'd31)? FIN: CALC;
             FIN: next_state = div_en? START: IDLE;
             default: next_state = next_state;
         endcase
@@ -104,32 +107,19 @@ always @(*) begin   //start
             // output_o = 0;
             round = 0;
             wd_en = 0;
-            // if(dividend_i == dividend_reg &&
-            //     divisor_i == divisor_reg &&
-            //     signed_i == signed_reg)
-            //         cal = 0;
-            //     else cal = 1'b1;
             signed_reg = signed_i;
             
             dividend_reg = dividend_i;
             divisor_reg = divisor_i;
-            // if(dividend_i[7]) 
-            //     rem_temp ={8'h00,(~dividend_i +1)};
-            // else 
-            //     rem_temp ={8'h00,dividend_i};
-            // if(divisor_i[7]) 
-            //     divisor_temp ={(~divisor_i +1),8'h00};
-            // else 
-            //     divisor_temp ={divisor_i,8'h00};
             if(signed_reg)begin
-                inv = {dividend_i[7] , divisor_i[7]};
-                rem_temp ={9'h00,dividend_abs};
-                divisor_temp ={1'b0, divisor_abs,8'h00};
+                inv = {dividend_i[DW -1] , divisor_i[DW -1]};
+                rem_temp ={33'h00,dividend_abs};
+                divisor_temp ={1'b0, divisor_abs,32'h00};
             end
             else begin
                 inv = 2'b0;
-                rem_temp ={9'h00,dividend_reg};
-                divisor_temp ={1'b0, divisor_reg,8'h00};
+                rem_temp ={33'h00,dividend_reg};
+                divisor_temp ={1'b0, divisor_reg,32'h00};
             end
             // inv = {dividend_i[7] , divisor_i[7]};
             // rem_temp ={9'h00,dividend_abs};
@@ -157,16 +147,16 @@ always @(posedge clk or rst) begin
             //     rem_temp = rem_temp - divisor_temp;
             //     divisor_temp = divisor_temp >>1;
             // end
-            if (round < 4'd8) begin
+            if (round < DW) begin
                 
-                if(rem_temp <= 17'h0_ffff) begin
+                if(rem_temp <= 33'h0_ffff_ffff) begin
                     rem_temp <= rem_temp - divisor_temp;
-                    output_temp[8-round] <= 1;
+                    output_temp[DW-round] <= 1;
                 end
                 
                 else begin
                     rem_temp <= rem_temp + divisor_temp;
-                    output_temp[8-round] <= 0;
+                    output_temp[DW-round] <= 0;
                     
                 end
                 divisor_temp <= divisor_temp >>1;
@@ -185,24 +175,24 @@ always @(*) begin
     end
     else if(state == FIN)begin
         if(cal) begin
-            output_temp[0] = rem_temp[16]? 0: 1;
-            rem_temp = rem_temp[16]? (rem_temp+divisor_abs): rem_temp;
+            output_temp[0] = rem_temp[DW*2]? 0: 1;
+            rem_temp = rem_temp[DW*2]? (rem_temp+divisor_abs): rem_temp;
             case (inv)
                 2'b00: begin
                     output_o = output_temp;
                     rem_o = rem_temp;
                 end
                 2'b01: begin
-                    output_o = ~output_temp +1;
+                    output_o = (rem_temp == 33'h0)? (~output_temp): (~output_temp +1);
                     rem_o = rem_temp;
                 end
                 2'b10: begin
-                    output_o = ~output_temp;
-                    rem_o = divisor_abs - rem_temp;
+                    output_o = (rem_temp == 33'h0)? (~output_temp+1): (~output_temp);
+                    rem_o = (rem_temp == 33'h0)? rem_temp: divisor_abs - rem_temp;
                 end
                 2'b11: begin
-                    output_o = output_temp +1;
-                    rem_o = divisor_abs - rem_temp;
+                    output_o = (rem_temp == 33'h0)? (output_temp): (output_temp +1);
+                    rem_o = (rem_temp == 33'h0)? rem_temp: divisor_abs - rem_temp;
                 end
                 default: begin
                     output_o = 0;
@@ -219,6 +209,13 @@ always @(*) begin
 
         // rem_o = rem_temp[7]? (rem_temp[7:0]+divisor_abs): rem_temp[7:0] ;
     end
+end
+
+always @(*) begin
+    if (state == START || state == CALC) begin
+        busy_o = 1'b1;
+    end
+    else busy_o = 1'b0;
 end
     
 endmodule
