@@ -437,15 +437,15 @@ always @(*) begin
             
 
             case (func3)
-                `INST_SB: begin
+                `INST_SB: begin     //sb
                     ram_size_o = 3'd1;
                     op2_reg = 32'h0000_00ff;
                 end
-                `INST_SH: begin
+                `INST_SH: begin     //sh
                     ram_size_o = 3'd2;
                     op2_reg = 32'h0000_ffff;
                 end
-                `INST_SW: begin
+                `INST_SW: begin     //sw
                     ram_size_o = 3'd4;
                     op2_reg = 32'hffff_ffff;
                 end
@@ -476,35 +476,35 @@ always @(*) begin
             ram_rd_en = 1'b1;
 
             case (func3)
-                `INST_LB: begin
+                `INST_LB: begin     //lb
                     ram_size_o = 3'd1;
                     // ram_rd_en = 1'b1;
                     op1_reg = {24'h0, ram_data_i[7:0]};
                     op2_reg = {{24{ram_data_i[7]}}, 8'h00};
                     // rd_data_o = op1_and_op2;
                 end
-                `INST_LH: begin
+                `INST_LH: begin     //lh
                     ram_size_o = 3'd2;
                     // ram_rd_en = 1'b1;
                     op1_reg= {16'h0, ram_data_i[15:0]};
                     op2_reg = {{16{ram_data_i[15]}}, 16'h0000};
                     // rd_data_o = op1_and_op2;
                 end
-                `INST_LW: begin
+                `INST_LW: begin     //lw
                     ram_size_o = 3'd4;
                     // ram_rd_en = 1'b1;
                     op1_reg = ram_data_i;
                     op2_reg = 32'h0;
                     // rd_data_o = op1_and_op2;
                 end
-                `INST_LBU: begin
+                `INST_LBU: begin        //lbu
                     ram_size_o = 3'd1;
                     // ram_rd_en = 1'b1;
                     op1_reg = {24'h0, ram_data_i[7:0]};
                     op2_reg = 32'h0;
                     // rd_data_o = op1_and_op2;
                 end
-                `INST_LHU: begin
+                `INST_LHU: begin        //lhu
                     ram_size_o = 3'd2;
                     // ram_rd_en = 1'b1;
                     op1_reg = {16'h0, ram_data_i[15:0]};

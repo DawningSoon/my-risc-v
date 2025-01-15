@@ -130,8 +130,8 @@ always @(*) begin   //start
     end
 end
 
-// always @(*) begin
-always @(posedge clk or rst) begin
+always @(*) begin
+// always @(posedge clk or rst) begin
      if(rst)begin
         // dividend_temp <= 0;
         divisor_temp <= 0;
