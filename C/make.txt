@@ -1,0 +1,9 @@
+
+
+
+riscv64-unknown-elf-gcc test.c -c -march=rv32i -mabi=ilp32 -nostdlib -o test.o
+riscv64-unknown-elf-gcc start.s -c -march=rv32i -mabi=ilp32 -nostdlib -o start.o
+riscv64-unknown-elf-gcc -march=rv32i -nostartfiles -nostdlib -o test.elf test.o start.o -T linker.lds -e start
+riscv64-unknown-elf-objdump -d test.elf
+riscv64-unknown-elf-objdump -d test.elf > test.txt
+cp test.txt /mnt/hgfs/temp/

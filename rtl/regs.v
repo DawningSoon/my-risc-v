@@ -40,10 +40,10 @@ end
 always @(posedge clk) begin
     if(rst)begin
         for(i = 0; i<32; i=i+1)begin
-            if (i == 2) begin
-                regs[i] <= 32'h2000;        //手动设置sp寄存器的栈顶
-            end
-            else 
+            // if (i == 2) begin
+            //     regs[i] <= 32'h2000;        //手动设置sp寄存器的栈顶
+            // end
+            // else 
             regs[i] <= 32'b0;
         end
     end
