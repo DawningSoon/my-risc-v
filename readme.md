@@ -34,7 +34,21 @@ sudo apt install gcc-riscv64-linux-gnu
 
 `export PATH=$PATH:/usr/lib/riscv64-unknown-elf/bin`
 
+## 4.2编译
 
+test.c中是一个简单的示例（复杂的例子我还没试）
+
+修改其中的代码直接make就行
+
+复杂代码的编译要自己写makefile和link
+
+## 4.3运行
+
+1. 将编译生成的test.txt修改成只包含机器码的形式
+
+![alt text](image.png)
+
+2. 将test.txt放到/sim中，即可用vivado进行运行与仿真
 
 
 
