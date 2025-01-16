@@ -2,6 +2,3 @@ b站risc工程文件/*
 add/*
 tinyriscv/*
 project_1/*
-sim/test.data.bin
-sim/test.inst.bin
-sim/test.txt
