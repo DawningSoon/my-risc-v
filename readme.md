@@ -22,15 +22,17 @@ Linux系统：Ubuntu 22.04
 
 1. 下载工具链
 
-`sudo apt update
-`sudo apt install build-essential gcc make perl dkms git gcc-riscv64-unknown-elf gdb-multiarch qemu-system-misc
-`sudo apt install gcc-riscv64-linux-gnu
+```
+sudo apt update
+sudo apt install build-essential gcc make perl dkms git gcc-riscv64-unknown-elf gdb-multiarch qemu-system-misc
+sudo apt install gcc-riscv64-linux-gnu
+```
 
 2. 配置环境变量
 
 在.bashrc中添加
 
-`export PATH=$PATH:/usr/lib/riscv64-unknown-elf/bin
+`export PATH=$PATH:/usr/lib/riscv64-unknown-elf/bin`
 
 
 
