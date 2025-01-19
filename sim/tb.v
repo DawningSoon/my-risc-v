@@ -16,13 +16,14 @@ wire [31:0]     inst_addr;
 wire [31:0]x3 = tb.u_top.u_regs.regs[3];
 wire [31:0]x26= tb.u_top.u_regs.regs[26];
 wire [31:0]x27= tb.u_top.u_regs.regs[27];
+wire [31:0]x15= tb.u_top.u_regs.regs[15];
 
 
 
 initial begin
 
     // $readmemh("E:/file/my-risc-v/sim/inst_txt/rv32um-p-mulhsu.txt",tb.u_rom.rom_mem);     //烧录指令
-	$readmemh("E:/file/my-risc-v/sim/test.txt",tb.u_rom.rom_mem);
+	$readmemh("E:/file/my-risc-v/my-risc-v/sim/test.txt",tb.u_rom.rom_mem);
     clk = 1;
     rst = 1;
     // inst = `INST_NOP;
@@ -60,6 +61,10 @@ integer r;
 	end
 
 always #5 clk = ~clk;
+
+always @(*) begin
+	$display("%s",x15);
+end
 
 // always @(*) begin
 //     case(inst_addr[3:2])
