@@ -12,9 +12,11 @@
 
 仿真所需的文件在/sim中
 
-新建项目后分别添加/rtl与/sim中的所有文件即可仿真
+新建项目后分别添加/rtl与/sim中的所有文件
 
-tb.v中通过`$readmemh("*.txt",tb.u_rom.rom_mem);`将指令导入内存中
+tb.v中通过`$readmemh("*.txt",tb.u_rom.rom_mem);`将指令导入内存中，根据工程路径调整
+
+进行行为级仿真
 
 /sim/inst_txt和/sim/generated中是一些指令测试代码，具体用法可以参考外瑞罗格的视频以及tiny-risc-v项目
 
