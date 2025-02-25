@@ -187,16 +187,21 @@ always @(*) begin
                     rem_o = rem_temp[DW-1:0];
                 end
                 2'b01: begin
-                    output_o = (rem_temp == 33'h0)? (~output_temp[DW-1:0]): (~output_temp[DW-1:0] +1);
+                    // output_o = (rem_temp == 33'h0)? (~output_temp[DW-1:0]+1): (~output_temp[DW-1:0] +1);
+                    output_o = ~output_temp[DW-1:0]+1;
                     rem_o = rem_temp[DW-1:0];
                 end
                 2'b10: begin
-                    output_o = (rem_temp == 33'h0)? (~output_temp[DW-1:0]+1): (~output_temp[DW-1:0]);
-                    rem_o = (rem_temp == 33'h0)? rem_temp[DW-1:0]: divisor_abs - rem_temp[DW-1:0];
+                    // output_o = (rem_temp == 33'h0)? (~output_temp[DW-1:0]+1): (~output_temp[DW-1:0]);
+                    // rem_o = (rem_temp == 33'h0)? rem_temp[DW-1:0]: divisor_abs - rem_temp[DW-1:0];
+                    output_o = ~output_temp[DW-1:0]+1;
+                    rem_o = ~rem_temp[DW-1:0] +1;
                 end
                 2'b11: begin
-                    output_o = (rem_temp == 33'h0)? (output_temp[DW-1:0]): (output_temp[DW-1:0] +1);
-                    rem_o = (rem_temp == 33'h0)? rem_temp[DW-1:0]: divisor_abs - rem_temp[DW-1:0];
+                    // output_o = (rem_temp == 33'h0)? (output_temp[DW-1:0]): (output_temp[DW-1:0] +1);
+                    // rem_o = (rem_temp == 33'h0)? rem_temp[DW-1:0]: divisor_abs - rem_temp[DW-1:0];
+                    output_o = output_temp[DW-1:0];
+                    rem_o = ~rem_temp[DW-1:0] +1;
                 end
                 default: begin
                     output_o = 0;

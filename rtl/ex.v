@@ -121,7 +121,8 @@ reg div_en_reg;
 wire div_busy;
 wire div_wd;
 
-div_test u_div(
+div_test  #(.DW(32)) u_div
+(
     .clk        (clk        ),
     .rst        (rst        ),
     .dividend_i (op1 ),
