@@ -176,23 +176,27 @@ always @(*) begin
     else if(state == FIN)begin
         if(cal) begin
             output_temp[0] = rem_temp[DW*2]? 0: 1;
-            rem_temp = rem_temp[DW*2]? (rem_temp+divisor_abs): rem_temp;
+            if (signed_reg) 
+                rem_temp = rem_temp[DW*2]? (rem_temp+divisor_abs): rem_temp;
+            else
+                rem_temp = rem_temp[DW*2]? (rem_temp+divisor_reg): rem_temp;
+            
             case (inv)
                 2'b00: begin
-                    output_o = output_temp;
-                    rem_o = rem_temp;
+                    output_o = output_temp[DW-1:0];
+                    rem_o = rem_temp[DW-1:0];
                 end
                 2'b01: begin
-                    output_o = (rem_temp == 33'h0)? (~output_temp): (~output_temp +1);
-                    rem_o = rem_temp;
+                    output_o = (rem_temp == 33'h0)? (~output_temp[DW-1:0]): (~output_temp[DW-1:0] +1);
+                    rem_o = rem_temp[DW-1:0];
                 end
                 2'b10: begin
-                    output_o = (rem_temp == 33'h0)? (~output_temp+1): (~output_temp);
-                    rem_o = (rem_temp == 33'h0)? rem_temp: divisor_abs - rem_temp;
+                    output_o = (rem_temp == 33'h0)? (~output_temp[DW-1:0]+1): (~output_temp[DW-1:0]);
+                    rem_o = (rem_temp == 33'h0)? rem_temp[DW-1:0]: divisor_abs - rem_temp[DW-1:0];
                 end
                 2'b11: begin
-                    output_o = (rem_temp == 33'h0)? (output_temp): (output_temp +1);
-                    rem_o = (rem_temp == 33'h0)? rem_temp: divisor_abs - rem_temp;
+                    output_o = (rem_temp == 33'h0)? (output_temp[DW-1:0]): (output_temp[DW-1:0] +1);
+                    rem_o = (rem_temp == 33'h0)? rem_temp[DW-1:0]: divisor_abs - rem_temp[DW-1:0];
                 end
                 default: begin
                     output_o = 0;
