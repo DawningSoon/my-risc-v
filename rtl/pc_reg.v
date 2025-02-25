@@ -13,12 +13,10 @@ always @(posedge clk) begin
         pc <= 32'b0;
     end
     else begin
-        if(hold_flag_i)begin
-            if(jump_en_i)
-                pc <= jump_addr_i;
-            else 
-                pc <=pc;
-        end
+        if(jump_en_i)
+            pc <= jump_addr_i;
+        else if(hold_flag_i)
+            pc <=pc;
         else 
             pc <= pc + 3'd4;
         

@@ -76,16 +76,16 @@ always @(posedge clk or rst) begin
     if(rst)begin
         cal = 1;
     end
-    else begin
-        if (next_state == START) begin
-            if(dividend_i == dividend_reg &&
-               divisor_i == divisor_reg &&
-               signed_i == signed_reg)
-                cal = 0;
-            else cal = 1'b1;
-        end
+    // else begin
+    //     if (next_state == START) begin
+    //         if(dividend_i == dividend_reg &&
+    //            divisor_i == divisor_reg &&
+    //            signed_i == signed_reg)
+    //             cal = 0;
+    //         else cal = 1'b1;
+    //     end
         
-    end
+    // end
 end
 
 always @(*) begin   //start

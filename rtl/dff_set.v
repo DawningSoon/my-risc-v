@@ -16,11 +16,10 @@ module dff_set #(
 		if(rst || jump_en_i)
 			data_o <= set_data;
 		else begin
-			// if(hold_flag_i)
-			// 	data_o <= data_o;
-			// else
-
-			data_o <= data_i;
+			if(hold_flag_i)
+				data_o <= data_o;
+			else
+				data_o <= data_i;
 		end	
 	end
 			

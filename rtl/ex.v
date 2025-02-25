@@ -106,14 +106,42 @@ reg  mul_en;
 
 mul u_mul(
     .rst             (rst             ),
-    .op1             (op1_reg             ),
-    .op2             (op2_reg             ),
+    .op1             (op1             ),
+    .op2             (op2             ),
     .func3           (func3           ),
     .mul_en          (mul_en          ),
     .op1_mul_op2_o   (op1_mul_op2   ),
     .op1_mul_op2_h_o (op1_mul_op2_h )
 );
 
+wire [31:0] op1_div_op2;
+wire [31:0] op1_div_op2_rem;
+reg div_en;
+reg div_en_reg;
+wire div_busy;
+wire div_wd;
+
+div_test u_div(
+    .clk        (clk        ),
+    .rst        (rst        ),
+    .dividend_i (op1 ),
+    .divisor_i  (op2  ),
+    .div_en     (div_en     ),
+    .signed_i   (~func3[0]   ),
+    .output_o   (op1_div_op2   ),
+    .rem_o      (op1_div_op2_rem      ),
+    .wd_en      (div_wd      ),
+    .busy_o     (div_busy     )
+);
+
+always @(posedge clk or posedge rst) begin
+    if (rst) begin
+        div_en_reg = 0;
+    end
+    else begin
+        div_en_reg <= div_en;
+    end
+end
 
 
 
@@ -134,6 +162,7 @@ always @(*) begin
             ram_wd_en = 1'h0;
 
             mul_en = 1'b0;
+            div_en = 1'b0;
 
             op1_reg = rs1_data_i;
             op2_reg = imm_I;
@@ -205,6 +234,7 @@ always @(*) begin
             ram_wd_en = 1'h0;
 
             mul_en = 1'b0;
+            div_en = 1'b0;
 
             rd_data_o = imm_U;
             rd_addr_o = rd;
@@ -223,6 +253,7 @@ always @(*) begin
             ram_wd_en = 1'h0;
 
             mul_en = 1'b0;
+            div_en = 1'b0;
 
             addr_base = ins_addr_i;
             addr_offset = imm_U;
@@ -251,6 +282,7 @@ always @(*) begin
             
             if(func7 == 7'b000_0000 || func7 == 7'b010_0000)begin
                 mul_en = 1'b0;
+                div_en = 1'b0;
             
                 case(func3)
                     `INST_ADD_SUB: begin
@@ -320,13 +352,30 @@ always @(*) begin
             else if(func7 == 7'b1)begin
                  if(func3[2] == 0)begin     //mul
                     mul_en = 1'b1;
+                    div_en = 1'b0;
                     rd_data_o = func3 == 3'h0 ? op1_mul_op2 : op1_mul_op2_h;
+
+                    rd_wr_en = 1'b1;
                  end
-                 else if (func3[2] == 1) begin      //div
+                 else if (func3[2] == 1) begin     
                     mul_en = 1'b0;
+                    div_en = 1'b1;
+                    // hold_flag_o = div_busy;
+                    hold_flag_o = 1'b1;
+                    if (~div_en_reg) 
+                        hold_flag_o = 1'b1;
+                    else 
+                        hold_flag_o = div_busy;
+                    
+                    if (func3[1]) 
+                        rd_data_o = op1_div_op2_rem;    //rem
+                    else
+                        rd_data_o = op1_div_op2;        //div
+                        
+                    rd_wr_en = div_wd;
                  end
             end
-            rd_wr_en = 1'b1;
+            // rd_wr_en = 1'b1;
         end
 
 
@@ -343,6 +392,9 @@ always @(*) begin
             ram_wd_en = 1'h0;
 
             hold_flag_o = 1'b0;
+
+            mul_en = 1'b0;
+            div_en = 1'b0;
 
             addr_base = ins_addr_i;
             addr_offset = imm_B;

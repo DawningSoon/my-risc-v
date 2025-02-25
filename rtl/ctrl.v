@@ -11,10 +11,7 @@ module ctrl (
 always @(*) begin
     jump_addr_o = jump_addr_i;
     jump_en_o = jump_en_i;
-    if(jump_en_i || hold_flag_i) begin
-        hold_flag_o = 1'b1;
-    end
-    else hold_flag_o = 1'b0;
+    hold_flag_o = hold_flag_i;
 
 end
     
