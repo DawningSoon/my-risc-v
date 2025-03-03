@@ -23,7 +23,7 @@ wire [31:0]x15= tb.u_top.u_regs.regs[15];
 initial begin
 
     // $readmemh("E:/file/my-risc-v/sim/inst_txt/rv32um-p-divu.txt",tb.u_rom.rom_mem);     //烧录指令
-	$readmemh("E:/file/my-risc-v/sim/test.txt",tb.u_rom.rom_mem);
+	// $readmemh("E:/file/my-risc-v/sim/test.txt",tb.u_rom.rom_mem);
     clk = 1;
     rst = 1;
     // inst = `INST_NOP;
@@ -84,9 +84,24 @@ top u_top(
     .inst_addr_o (inst_addr )
 );
 
-rom u_rom(
-    .rom_addr_i (inst_addr ),
-    .rom_o      (inst      )
+// rom u_rom(
+//     .rom_addr_i (inst_addr ),
+//     .rom_o      (inst      )
+// );
+
+bram_4k rom_ram (
+  .clka(clk),    // input wire clka
+  .wea(4'b0),      // input wire [3 : 0] wea
+  .addra(inst_addr),  // input wire [31 : 0] addra
+  .dina(32'b0),    // input wire [31 : 0] dina
+  .douta(inst),  // output wire [31 : 0] douta
+
+  .clkb(clk),    // input wire clkb
+  .enb(enb),      // input wire enb
+  .web(web),      // input wire [3 : 0] web
+  .addrb(addrb),  // input wire [31 : 0] addrb
+  .dinb(dinb),    // input wire [31 : 0] dinb
+  .doutb(doutb)  // output wire [31 : 0] doutb
 );
 
 

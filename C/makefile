@@ -5,14 +5,14 @@ CFLAGS = -march=rv32im -mabi=ilp32 -nostdlib
 LDFLAGS = -march=rv32im -nostartfiles -nostdlib -T linker.lds -e _start
 
 # 文件路径
-SRCS = start.s test.c 
+SRCS = start.s test.c
 OBJS = start.o test.o
 ELF = test.elf
 DUMP = test.txt
 DEST = /mnt/hgfs/temp/
 
 # 默认目标
-all: $(ELF) dump copy
+all: $(BIN) dump copy
 
 # 编译 C 文件
 test.o: test.c
@@ -31,12 +31,13 @@ dump: $(ELF)
 	$(OBJDUMP) -d $(ELF) > $(DUMP)
 
 # 复制 dump 文件到指定路径
-#copy: dump
-#	cp $(DUMP) $(DEST)
+copy: dump
+	cp $(DUMP) $(DEST)
 
 # 清理生成的文件
 clean:
-	rm -f $(OBJS) $(ELF) $(DUMP)
+	rm -f $(OBJS) $(ELF) $(DUMP) $(BIN)
 
 # 声明伪目标
 .PHONY: all dump copy clean
+

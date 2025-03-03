@@ -24,13 +24,28 @@ module ins_fetch(
 	
 	// assign inst_o = rom_inst_i;
 
+	wire [31:0] inst_addr_temp;
+
 	dff_set 
 	#(.DW(6'd32))
-	addr(
+	addr_1(
 		.clk      (clk      ),
 		.rst      (rst      ),
 		.set_data (32'b0 ),
 		.data_i   (pc_addr_i   ),
+
+		.jump_en_i(jump_en_i),
+		.hold_flag_i(hold_flag_i),
+		.data_o   (inst_addr_temp   )
+	);
+
+		dff_set 
+	#(.DW(6'd32))
+	addr_2(
+		.clk      (clk      ),
+		.rst      (rst      ),
+		.set_data (32'b0 ),
+		.data_i   (inst_addr_temp   ),
 
 		.jump_en_i(jump_en_i),
 		.hold_flag_i(hold_flag_i),
