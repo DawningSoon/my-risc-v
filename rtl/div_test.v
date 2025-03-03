@@ -44,7 +44,7 @@ reg cal;
 reg [1:0] inv;
 reg signed_reg;
 
-always @(posedge clk or rst) begin
+always @(posedge clk or posedge rst) begin
     if(rst) begin
         state <= IDLE;
     end
@@ -72,7 +72,7 @@ always @(*) begin
     end
 end
 
-always @(posedge clk or rst) begin
+always @(posedge clk or posedge rst) begin
     if(rst)begin
         cal = 1;
     end

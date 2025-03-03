@@ -1,8 +1,8 @@
 # 定义工具链和选项
 CC = riscv64-unknown-elf-gcc
 OBJDUMP = riscv64-unknown-elf-objdump
-CFLAGS = -march=rv32i -mabi=ilp32 -nostdlib
-LDFLAGS = -march=rv32i -nostartfiles -nostdlib -T linker.lds -e _start
+CFLAGS = -march=rv32im -mabi=ilp32 -nostdlib
+LDFLAGS = -march=rv32im -nostartfiles -nostdlib -T linker.lds -e _start
 
 # 文件路径
 SRCS = start.s test.c 
