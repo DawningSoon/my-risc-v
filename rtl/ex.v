@@ -121,7 +121,7 @@ reg div_en_reg;
 wire div_busy;
 wire div_wd;
 
-div_test  #(.DW(32)) u_div
+div  #(.DW(32)) u_div
 (
     .clk        (clk        ),
     .rst        (rst        ),
