@@ -2,10 +2,10 @@
 这是一个用来自学risc-v以及soc设计的小项目，初衷是从零开始搭建处理器，在此感谢B站up主外瑞罗格以及tiny-risc-v项目
 
 # 2.项目简介 
-1. 目前支持rv32i，以及一部分乘法操作（还在更新中）
-2. 四级流水
+1. 目前支持rv32im
+2. 四级流水（比no-bram版本多了一级取指）
 3. 简单的C语言程序运行
-4. 通过寄存器实现的8KB内存
+4. 通过Xilinx的block memory generator生成的双口bram实现rom,寄存器实现ram
 
 # 3.仿真
 目前仿真通过vivado实现
@@ -55,6 +55,8 @@ test.c中是一个简单的示例（复杂的例子我还没试）
 ![alt text](image.png)
 
 2. 将test.txt放到/sim中，即可用vivado进行运行与仿真
+
+3. 通过txt_to_coe.py将txt转为coe，为Xilinx生成的bram设置初始值
 
 由于现在没有接外设，输出只能从寄存器和内存来看了
 
