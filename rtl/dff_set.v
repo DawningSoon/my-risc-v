@@ -12,7 +12,7 @@ module dff_set #(
 
 	output reg [DW-1:0]  data_o	
 );
-	always @(posedge clk)begin
+	always @(posedge clk or posedge rst or posedge jump_en_i)begin
 		if(rst || jump_en_i)
 			data_o <= set_data;
 		else begin
