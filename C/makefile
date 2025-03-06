@@ -12,7 +12,7 @@ DUMP = test.txt
 DEST = /mnt/hgfs/temp/
 
 # 默认目标
-all: $(BIN) dump copy
+all: $(ELF) dump copy
 
 # 编译 C 文件
 test.o: test.c
@@ -36,7 +36,7 @@ copy: dump
 
 # 清理生成的文件
 clean:
-	rm -f $(OBJS) $(ELF) $(DUMP) $(BIN)
+	rm -f $(OBJS) $(ELF) $(DUMP)
 
 # 声明伪目标
 .PHONY: all dump copy clean

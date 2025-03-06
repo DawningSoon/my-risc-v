@@ -18,6 +18,23 @@ wire [31:0]x26= tb.u_top.u_regs.regs[26];
 wire [31:0]x27= tb.u_top.u_regs.regs[27];
 wire [31:0]x15= tb.u_top.u_regs.regs[15];
 
+wire  [31:0] haddr;
+wire  [2:0] hsize;
+wire [31:0] hwdata;
+wire        hwrite;
+wire  [1:0] htrans;
+wire [31:0]  hrdata;
+wire hready;
+
+wire [31:0] haddr_s;
+wire [2:0]  hsize_s;
+wire [31:0] hwdata_s;
+wire        hwrite_s;
+// reg[31:0]  hrdata_s1;
+wire[31:0]  hrdata_s1;
+reg        hready_s1;
+wire         hsel_s1;
+
 
 
 initial begin
@@ -28,8 +45,10 @@ initial begin
     rst = 1;
     // inst = `INST_NOP;
 
-    #100
+    #100;
     rst = 0;
+
+	hready_s1 = 1;
 
 
 end
@@ -46,7 +65,7 @@ integer r;
 		end */
 		wait(x26 == 32'b1);
 		
-		#200;
+		#20;
 		if(x27 == 32'b1) begin
 			$display("############################");
 			$display("########  pass  !!!#########");
@@ -77,17 +96,67 @@ end
 //     endcase
 // end
 
+
+
+
 top u_top(
-    .clk         (clk         ),
-    .rst         (rst         ),
-    .inst_i      (inst      ),
-    .inst_addr_o (inst_addr )
+	.clk         (clk         ),
+	.rst         (rst         ),
+	.inst_i      (inst      ),
+	.inst_addr_o (inst_addr ),
+
+	.haddr       (haddr       ),
+	.hsize       (hsize       ),
+	.htrans      (htrans      ),
+	.hwdata      (hwdata      ),
+	.hwrite      (hwrite      ),
+	.hrdata      (hrdata      ),
+	.hready      (hready      )
 );
+
+ahb_bridge u_ahb_bridge(
+	.hclk      (clk      ),
+	.hreset_n  (~rst  ),
+	.haddr_m   (haddr   ),
+	.hsize_m   (hsize   ),
+	.hwdata_m  (hwdata  ),
+	.hwrite_m  (hwrite  ),
+	.htrans_m  (htrans  ),
+	.hrdata_m  (hrdata  ),
+	.hready_m  (hready  ),
+	.haddr_s   (haddr_s   ),
+	.hsize_s   (hsize_s   ),
+	.hwdata_s  (hwdata_s  ),
+	.hwrite_s  (hwrite_s  ),
+	.hrdata_s1 (hrdata_s1 ),
+	.hready_s1 (hready_s1 ),
+	.hsel_s1   (hsel_s1   )
+	// .hrdata_s2 (hrdata_s2 ),
+	// .hready_s2 (hready_s2 ),
+	// .hsel_s2   (hsel_s2   ),
+	// .hrdata_s3 (hrdata_s3 ),
+	// .hready_s3 (hready_s3 ),
+	// .hsel_s3   (hsel_s3   ),
+	// .hrdata_s4 (hrdata_s4 ),
+	// .hready_s4 (hready_s4 ),
+	// .hsel_s4   (hsel_s4   )
+);
+
 
 // rom u_rom(
 //     .rom_addr_i (inst_addr ),
 //     .rom_o      (inst      )
 // );
+
+reg [31:0] bram_addr;
+reg [3:0] 	web;
+reg [31:0] dinb;
+
+always @(posedge clk ) begin
+    bram_addr <= haddr_s;
+    web <= {hwrite_s && hsize_s==3'd4, hwrite_s && hsize_s>=3'd3, hwrite_s && hsize_s>=3'd2 ,hwrite_s};
+    // dinb <= hwdata_s;
+end
 
 bram_4k rom_ram (
   .clka(clk),    // input wire clka
@@ -97,11 +166,11 @@ bram_4k rom_ram (
   .douta(inst),  // output wire [31 : 0] douta
 
   .clkb(clk),    // input wire clkb
-  .enb(enb),      // input wire enb
+  .enb(hsel_s1),      // input wire enb
   .web(web),      // input wire [3 : 0] web
-  .addrb(addrb),  // input wire [31 : 0] addrb
-  .dinb(dinb),    // input wire [31 : 0] dinb
-  .doutb(doutb)  // output wire [31 : 0] doutb
+  .addrb(bram_addr),  // input wire [31 : 0] addrb
+  .dinb(hwdata_s),    // input wire [31 : 0] dinb
+  .doutb(hrdata_s1)  // output wire [31 : 0] doutb
 );
 
 

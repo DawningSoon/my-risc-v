@@ -56,7 +56,7 @@ test.c中是一个简单的示例（复杂的例子我还没试）
 
 2. 将test.txt放到/sim中，即可用vivado进行运行与仿真
 
-3. 通过txt_to_coe.py将txt转为coe，为Xilinx生成的bram设置初始值
+3. 通过/sim/txt_to_coe.py将txt转为coe，为Xilinx生成的bram设置初始值
 
 由于现在没有接外设，输出只能从寄存器和内存来看了
 
@@ -84,3 +84,5 @@ test.c中是一个简单的示例（复杂的例子我还没试）
 2025/02/25 完成rv32m
 
 2025/02/28 忽略存储器后（ram和rom）可综合
+
+2025/03/06 实现ahb_lite总线的搭载，可以通过总线连接内存与外设，用bram实现ram与rom

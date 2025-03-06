@@ -21,7 +21,16 @@ module ex (
 
     output reg [31:0] jump_addr_o,
     output reg   	  jump_en_o,
-	output reg  	  hold_flag_o
+	output reg  	  hold_flag_o,
+
+    output reg  [31:0]ahb_addr_o,
+    output reg        ahb_rd_en,
+    output reg  [2:0] ahb_size_o,
+    input  wire [31:0]ahb_rd_data,
+
+    output reg         ahb_wd_en,
+    output reg  [31:0] ahb_wd_data,
+    input wire         ahb_ready
 
 );
 
@@ -144,7 +153,22 @@ always @(posedge clk or posedge rst) begin
     end
 end
 
+reg ahb_en_reg;
 
+// always @(posedge clk or posedge rst) begin
+//     if (rst) begin
+//         ahb_en_reg = 0;
+//     end
+//     else begin
+        
+//         if (ahb_rd_en || ahb_wd_en) begin
+//             ahb_en_reg <= 1'b1;
+//         end
+//         else if (ahb_en_reg && ahb_ready) begin
+//             ahb_en_reg <= 1'b0;
+//         end
+//     end
+// end
 
 always @(*) begin
     rd_addr_o = rd;
@@ -157,10 +181,11 @@ always @(*) begin
             jump_en_o	= 1'b0;
             hold_flag_o = 1'b0;	
 
-            ram_addr_o = 32'h0;
-            ram_data_o = 32'h0;
-            ram_size_o = 4'd0;
-            ram_wd_en = 1'h0;
+            //ahb_addr_o = 32'h0;
+            ahb_wd_data = 32'h0;
+            ahb_size_o = 3'd0;
+            ahb_wd_en = 1'h0;
+            ahb_rd_en = 1'h0;
 
             mul_en = 1'b0;
             div_en = 1'b0;
@@ -229,10 +254,11 @@ always @(*) begin
             jump_en_o	= 1'b0;
             hold_flag_o = 1'b0;
 
-            ram_addr_o = 32'h0;
-            ram_data_o = 32'h0;
-            ram_size_o = 3'd0;
-            ram_wd_en = 1'h0;
+            //ahb_addr_o = 32'h0;
+            ahb_wd_data = 32'h0;
+            ahb_size_o = 3'd0;
+            ahb_wd_en = 1'h0;
+            ahb_rd_en = 1'h0;
 
             mul_en = 1'b0;
             div_en = 1'b0;
@@ -248,10 +274,11 @@ always @(*) begin
             jump_en_o	= 1'b0;
             hold_flag_o = 1'b0;
 
-            ram_addr_o = 32'h0;
-            ram_data_o = 32'h0;
-            ram_size_o = 3'd0;
-            ram_wd_en = 1'h0;
+            //ahb_addr_o = 32'h0;
+            ahb_wd_data = 32'h0;
+            ahb_size_o = 3'd0;
+            ahb_wd_en = 1'h0;
+            ahb_rd_en = 1'h0;
 
             mul_en = 1'b0;
             div_en = 1'b0;
@@ -270,10 +297,11 @@ always @(*) begin
             jump_en_o	= 1'b0;
             hold_flag_o = 1'b0;	
 
-            ram_addr_o = 32'h0;
-            ram_data_o = 32'h0;
-            ram_size_o = 3'd0;
-            ram_wd_en = 1'h0;
+            //ahb_addr_o = 32'h0;
+            ahb_wd_data = 32'h0;
+            ahb_size_o = 3'd0;
+            ahb_wd_en = 1'h0;
+            ahb_rd_en = 1'h0;
 
             op1_reg = rs1_data_i;
             op2_reg = rs2_data_i;
@@ -387,10 +415,11 @@ always @(*) begin
             rd_addr_o = `x0;
             rd_wr_en  = 1'b0;
 
-            ram_addr_o = 32'h0;
-            ram_data_o = 32'h0;
-            ram_size_o = 3'd0;
-            ram_wd_en = 1'h0;
+            //ahb_addr_o = 32'h0;
+            ahb_wd_data = 32'h0;
+            ahb_size_o = 3'd0;
+            ahb_wd_en = 1'h0;
+            ahb_rd_en = 1'h0;
 
             hold_flag_o = 1'b0;
 
@@ -439,10 +468,11 @@ always @(*) begin
 
         `INST_JAL: begin        //jal
 
-            ram_addr_o = 32'h0;
-            ram_data_o = 32'h0;
-            ram_size_o = 3'd0;
-            ram_wd_en = 1'h0;
+            //ahb_addr_o = 32'h0;
+            ahb_wd_data = 32'h0;
+            ahb_size_o = 3'd0;
+            ahb_wd_en = 1'h0;
+            ahb_rd_en = 1'h0;
             rd_addr_o = rd;
 
             op1_reg = ins_addr_i;
@@ -480,36 +510,43 @@ always @(*) begin
 
             jump_addr_o = 32'b0;
             jump_en_o	= 1'b0;
-            hold_flag_o = 1'b0;
+            // hold_flag_o = 1'b0;
 
             addr_base = rs1_data_i;
             addr_offset = imm_S;
-            ram_addr_o = addr_dest;
+            ahb_addr_o = addr_dest;
 
             op1_reg = rs2_data_i;
             
 
             case (func3)
                 `INST_SB: begin     //sb
-                    ram_size_o = 3'd1;
+                    ahb_size_o = 3'd1;
                     op2_reg = 32'h0000_00ff;
                 end
                 `INST_SH: begin     //sh
-                    ram_size_o = 3'd2;
+                    ahb_size_o = 3'd2;
                     op2_reg = 32'h0000_ffff;
                 end
                 `INST_SW: begin     //sw
-                    ram_size_o = 3'd4;
+                    ahb_size_o = 3'd4;
                     op2_reg = 32'hffff_ffff;
                 end
                 default: begin
-                    ram_size_o = 3'd0;
+                    ahb_size_o = 3'd0;
                     op2_reg = 32'h0000_0000;
                 end
             endcase
 
-            ram_data_o = op1_and_op2;
-            ram_wd_en = 1'b1;
+            ahb_wd_data = op1_and_op2;
+            ahb_wd_en = 1'b1;
+            ahb_rd_en = 1'h0;
+
+            hold_flag_o = 1'b1;
+            if (ahb_ready) begin
+                ahb_wd_en = 1'b0;
+                hold_flag_o = 1'b0;
+            end
         end
 
         `INST_TYPE_L: begin
@@ -519,61 +556,60 @@ always @(*) begin
 
             rd_addr_o = rd;
 
-            ram_wd_en = 1'b0;
-            ram_data_o = 32'h0;
+            ahb_wd_en = 1'b0;
+            ahb_wd_data = 32'h0;
 
             addr_base = rs1_data_i;
             addr_offset = imm_I;
-            ram_addr_o = addr_dest;
+            ahb_addr_o = addr_dest;
 
-            ram_rd_en = 1'b1;
+            
 
             case (func3)
                 `INST_LB: begin     //lb
-                    ram_size_o = 3'd1;
-                    // ram_rd_en = 1'b1;
-                    op1_reg = {24'h0, ram_data_i[7:0]};
-                    op2_reg = {{24{ram_data_i[7]}}, 8'h00};
-                    // rd_data_o = op1_and_op2;
+                    ahb_size_o = 3'd1;
+                    op1_reg = {24'h0, ahb_rd_data[7:0]};
+                    op2_reg = {{24{ahb_rd_data[7]}}, 8'h00};
                 end
                 `INST_LH: begin     //lh
-                    ram_size_o = 3'd2;
-                    // ram_rd_en = 1'b1;
-                    op1_reg= {16'h0, ram_data_i[15:0]};
-                    op2_reg = {{16{ram_data_i[15]}}, 16'h0000};
-                    // rd_data_o = op1_and_op2;
+                    ahb_size_o = 3'd2;
+                    op1_reg= {16'h0, ahb_rd_data[15:0]};
+                    op2_reg = {{16{ahb_rd_data[15]}}, 16'h0000};
                 end
                 `INST_LW: begin     //lw
-                    ram_size_o = 3'd4;
-                    // ram_rd_en = 1'b1;
-                    op1_reg = ram_data_i;
+                    ahb_size_o = 3'd4;
+                    op1_reg = ahb_rd_data;
                     op2_reg = 32'h0;
-                    // rd_data_o = op1_and_op2;
                 end
                 `INST_LBU: begin        //lbu
-                    ram_size_o = 3'd1;
-                    // ram_rd_en = 1'b1;
-                    op1_reg = {24'h0, ram_data_i[7:0]};
+                    ahb_size_o = 3'd1;
+                    op1_reg = {24'h0, ahb_rd_data[7:0]};
                     op2_reg = 32'h0;
-                    // rd_data_o = op1_and_op2;
                 end
                 `INST_LHU: begin        //lhu
-                    ram_size_o = 3'd2;
-                    // ram_rd_en = 1'b1;
-                    op1_reg = {16'h0, ram_data_i[15:0]};
+                    ahb_size_o = 3'd2;
+                    op1_reg = {16'h0, ahb_rd_data[15:0]};
                     op2_reg = 32'h0; 
-                    // rd_data_o = op1_and_op2;
                 end
                 default: begin
                     // ram_rd_en = 0;
-                    ram_size_o = 0;
+                    ahb_size_o = 3'd0;
                     op1_reg = 32'h0;
                     op2_reg = 32'h0;
                 end
             endcase
+            ahb_rd_en = ~ahb_ready;
+            ahb_wd_en = 1'h0;
+
             rd_addr_o = rd;
             rd_data_o = op1_or_op2;
-            rd_wr_en = 1'b1;
+            rd_wr_en = 1'b1;            
+
+            hold_flag_o = ~ahb_ready;
+            // if (ahb_ready) begin
+            //     ahb_rd_en = 1'b0;
+            //     hold_flag_o = 1'b0;
+            // end
             
         end
 
@@ -586,10 +622,11 @@ always @(*) begin
             jump_en_o	= 1'b0;
             hold_flag_o = 1'b0;
 
-            ram_addr_o = 32'h0;
-            ram_data_o = 32'h0;
-            ram_size_o = 3'd0;
-            ram_wd_en = 1'h0;
+            //ahb_addr_o = 32'h0;
+            ahb_wd_data = 32'h0;
+            ahb_size_o = 3'd0;
+            ahb_wd_en = 1'h0;
+            ahb_rd_en = 1'h0;
             rd_addr_o = rd;
         end
     endcase
