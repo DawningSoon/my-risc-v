@@ -632,17 +632,17 @@ always @(*) begin
     endcase
 end
 
-ram u_ram(
-    .clk       (clk       ),
-    .rd_addr_i (ram_addr_o ),
-    .rd_en     (ram_rd_en     ),
-    .rd_size_i (ram_size_o ),
-    .rd_data_o (ram_data_i ),
-    .wd_addr_i (ram_addr_o ),
-    .wd_en     (ram_wd_en     ),
-    .wd_size_i (ram_size_o ),
-    .wd_data_i (ram_data_o )
-);
+// ram u_ram(
+//     .clk       (clk       ),
+//     .rd_addr_i (ram_addr_o ),
+//     .rd_en     (ram_rd_en     ),
+//     .rd_size_i (ram_size_o ),
+//     .rd_data_o (ram_data_i ),
+//     .wd_addr_i (ram_addr_o ),
+//     .wd_en     (ram_wd_en     ),
+//     .wd_size_i (ram_size_o ),
+//     .wd_data_i (ram_data_o )
+// );
 
 
 

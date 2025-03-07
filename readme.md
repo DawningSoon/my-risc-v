@@ -5,7 +5,8 @@
 1. 目前支持rv32im
 2. 四级流水（比no-bram版本多了一级取指）
 3. 简单的C语言程序运行
-4. 通过Xilinx的block memory generator生成的双口bram实现rom,寄存器实现ram
+4. 通过Xilinx的block memory generator生成的双口bram实现rom和ram，在no-bram分支中有通过寄存器实现的版本
+5. 可综合
 
 # 3.仿真
 目前仿真通过vivado实现
@@ -14,7 +15,17 @@
 
 新建项目后分别添加/rtl与/sim中的所有文件
 
-tb.v中通过`$readmemh("*.txt",tb.u_rom.rom_mem);`将指令导入内存中，根据工程路径调整
+bram通过xilinx的block memory generator生成,具体配置如下图所示，深度可根据需求更改
+
+![alt text](/docs/bram1.png)
+
+![alt text](/docs/bram2.png)
+
+![alt text](/docs/bram3.png)
+
+将指令代码复制到/sim/test.c中，通过/sim/txt_to_coe.py生成coe文件
+
+将coe文件添加到bram的初始数据中并重新生成bram
 
 进行行为级仿真
 
