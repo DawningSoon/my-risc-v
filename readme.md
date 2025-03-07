@@ -15,6 +15,8 @@
 
 新建项目后分别添加/rtl与/sim中的所有文件
 
+在tb中需要例化soc_top.v中的top与ahb_bridge.v具体可以参考/sim/tb.v
+
 bram通过xilinx的block memory generator生成,具体配置如下图所示，深度可根据需求更改
 
 ![alt text](/docs/bram1.png)
@@ -65,9 +67,9 @@ test.c中是一个简单的示例（复杂的例子我还没试）
 
 ![alt text](image.png)
 
-2. 将test.txt放到/sim中，即可用vivado进行运行与仿真
+2. 将test.txt放到/sim中
 
-3. 通过/sim/txt_to_coe.py将txt转为coe，为Xilinx生成的bram设置初始值
+3. 通过/sim/txt_to_coe.py将txt转为coe
 
 由于现在没有接外设，输出只能从寄存器和内存来看了
 
