@@ -19,6 +19,8 @@ module div #
 // reg [15:0] dividend_temp;
 reg [2*DW:0] divisor_temp;
 reg [2*DW:0] rem_temp;
+reg [2*DW:0] divisor_init;
+reg [2*DW:0] rem_init;
 reg [DW:0] output_temp;
 
 reg [DW -1:0] dividend_reg;
@@ -99,6 +101,10 @@ always @(*) begin   //start
         inv = 0;
         signed_reg = 0;
         cal = 1;
+        output_temp <= 0;
+        
+        output_o = 0;
+        wd_en = 0;
     end
     else begin
         if(state == START)begin
@@ -127,22 +133,7 @@ always @(*) begin   //start
             rem_temp = rem_temp - divisor_temp;
             divisor_temp = divisor_temp >>1;
         end
-    end
-end
-
-always @(*) begin
-// always @(posedge clk or rst) begin
-     if(rst)begin
-        // dividend_temp <= 0;
-        divisor_temp <= 0;
-        rem_temp <= 0;
-        round <= 0;
-        output_temp <= 0;
-        rem_o <= 0;
-        // inv <= 0;
-    end
-    else begin
-        if(state == CALC)begin
+        else if(state == CALC)begin
             // if(round == 0)begin
             //     rem_temp = rem_temp - divisor_temp;
             //     divisor_temp = divisor_temp >>1;
@@ -164,61 +155,56 @@ always @(*) begin
                 // dividend_temp <= rem_temp;
             end
         end
-    end
-end
-
-always @(*) begin
-    if(rst)begin
-        output_o = 0;
-        rem_o = 0;
-        wd_en = 0;
-    end
-    else if(state == FIN)begin
-        if(cal) begin
-            output_temp[0] = rem_temp[DW*2]? 0: 1;
-            if (signed_reg) 
-                rem_temp = rem_temp[DW*2]? (rem_temp+divisor_abs): rem_temp;
-            else
-                rem_temp = rem_temp[DW*2]? (rem_temp+divisor_reg): rem_temp;
-            
-            case (inv)
-                2'b00: begin
-                    output_o = output_temp[DW-1:0];
-                    rem_o = rem_temp[DW-1:0];
-                end
-                2'b01: begin
-                    // output_o = (rem_temp == 33'h0)? (~output_temp[DW-1:0]+1): (~output_temp[DW-1:0] +1);
-                    output_o = ~output_temp[DW-1:0]+1;
-                    rem_o = rem_temp[DW-1:0];
-                end
-                2'b10: begin
-                    // output_o = (rem_temp == 33'h0)? (~output_temp[DW-1:0]+1): (~output_temp[DW-1:0]);
-                    // rem_o = (rem_temp == 33'h0)? rem_temp[DW-1:0]: divisor_abs - rem_temp[DW-1:0];
-                    output_o = ~output_temp[DW-1:0]+1;
-                    rem_o = ~rem_temp[DW-1:0] +1;
-                end
-                2'b11: begin
-                    // output_o = (rem_temp == 33'h0)? (output_temp[DW-1:0]): (output_temp[DW-1:0] +1);
-                    // rem_o = (rem_temp == 33'h0)? rem_temp[DW-1:0]: divisor_abs - rem_temp[DW-1:0];
-                    output_o = output_temp[DW-1:0];
-                    rem_o = ~rem_temp[DW-1:0] +1;
-                end
-                default: begin
-                    output_o = 0;
-                    rem_o = 0;
-                end
-            endcase 
-        end
+        else if(state == FIN)begin
+            if(cal) begin
+                output_temp[0] = rem_temp[DW*2]? 0: 1;
+                if (signed_reg) 
+                    rem_temp = rem_temp[DW*2]? (rem_temp+divisor_abs): rem_temp;
+                else
+                    rem_temp = rem_temp[DW*2]? (rem_temp+divisor_reg): rem_temp;
+                
+                case (inv)
+                    2'b00: begin
+                        output_o = output_temp[DW-1:0];
+                        rem_o = rem_temp[DW-1:0];
+                    end
+                    2'b01: begin
+                        // output_o = (rem_temp == 33'h0)? (~output_temp[DW-1:0]+1): (~output_temp[DW-1:0] +1);
+                        output_o = ~output_temp[DW-1:0]+1;
+                        rem_o = rem_temp[DW-1:0];
+                    end
+                    2'b10: begin
+                        // output_o = (rem_temp == 33'h0)? (~output_temp[DW-1:0]+1): (~output_temp[DW-1:0]);
+                        // rem_o = (rem_temp == 33'h0)? rem_temp[DW-1:0]: divisor_abs - rem_temp[DW-1:0];
+                        output_o = ~output_temp[DW-1:0]+1;
+                        rem_o = ~rem_temp[DW-1:0] +1;
+                    end
+                    2'b11: begin
+                        // output_o = (rem_temp == 33'h0)? (output_temp[DW-1:0]): (output_temp[DW-1:0] +1);
+                        // rem_o = (rem_temp == 33'h0)? rem_temp[DW-1:0]: divisor_abs - rem_temp[DW-1:0];
+                        output_o = output_temp[DW-1:0];
+                        rem_o = ~rem_temp[DW-1:0] +1;
+                    end
+                    default: begin
+                        output_o = 0;
+                        rem_o = 0;
+                    end
+                endcase 
+            end
 
 
-        wd_en = 1'b1;
-       
+            wd_en = 1'b1;
         
-        // output_o = inv? ~output_temp +1: output_temp;
+            
+            // output_o = inv? ~output_temp +1: output_temp;
 
-        // rem_o = rem_temp[7]? (rem_temp[7:0]+divisor_abs): rem_temp[7:0] ;
+            // rem_o = rem_temp[7]? (rem_temp[7:0]+divisor_abs): rem_temp[7:0] ;
+        end
     end
+    
 end
+
+
 
 always @(*) begin
     if (state == START || state == CALC) begin

@@ -55,21 +55,11 @@ module ins_fetch(
 
 	reg [31:0] rom_inst_reg;
 	reg 	   hold_flag_reg;
-	reg [31:0] rom_inst_temp;
+	// reg [31:0] rom_inst_temp;
 	reg  	   jump_en_reg;
 
 	// assign rom_inst_temp = hold_flag_reg ? rom_inst_reg : rom_inst_i;
 
-	always @(*) begin
-		if(jump_en_i) begin
-			rom_inst_temp = `INST_NOP;
-		end
-		else if (hold_flag_reg) begin
-			rom_inst_temp = rom_inst_reg;
-		end
-		else
-			rom_inst_temp = rom_inst_i;
-	end
 
 	always @(posedge clk or  posedge rst) begin
 		if (rst) begin
@@ -91,8 +81,8 @@ module ins_fetch(
 		.clk      (clk      ),
 		.rst      (rst      ),
 		.set_data (`INST_NOP ),
-		.data_i   (rom_inst_temp   ),
-		.jump_en_i(jump_en_i || jump_en_reg),
+		.data_i   (rom_inst_i   ),
+		.jump_en_i(jump_en_reg),
 		.hold_flag_i(hold_flag_i),
 		.data_o   (inst_o   )
 	);
