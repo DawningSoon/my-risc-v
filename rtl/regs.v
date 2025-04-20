@@ -28,7 +28,7 @@ always @(*) begin
 end
 
 always @(*) begin
-    if(rst == 1'b1) rs1_data_o <= 32'b0;
+    if(rst == 1'b1) rs2_data_o <= 32'b0;
     else begin
         if(rs2_addr_i == 5'b0) rs2_data_o <= 32'b0;
         else if(wr_en == 1'b1 && (rd_addr_i == rs2_addr_i))

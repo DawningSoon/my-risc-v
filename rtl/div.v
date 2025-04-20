@@ -76,7 +76,7 @@ end
 
 always @(posedge clk or posedge rst) begin
     if(rst)begin
-        cal = 1;
+        // cal = 1;
     end
     // else begin
     //     if (next_state == START) begin
