@@ -539,13 +539,17 @@ always @(*) begin
             endcase
 
             ahb_wd_data = op1_and_op2;
-            ahb_wd_en = 1'b1;
+            
             ahb_rd_en = 1'h0;
 
-            hold_flag_o = 1'b1;
+            
             if (ahb_ready) begin
                 ahb_wd_en = 1'b0;
                 hold_flag_o = 1'b0;
+            end
+            else begin
+                hold_flag_o = 1'b1;
+                ahb_wd_en = 1'b1;
             end
         end
 

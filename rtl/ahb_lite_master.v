@@ -41,6 +41,7 @@ assign hsize = ram_size_i;
 assign hwrite = ram_wd_en;
 assign ram_ready = hready && (rd_en_temp || wd_en_temp);
 
+
 always @(*) begin
     if(~hreset_n) begin
         htrans = 2'b0;

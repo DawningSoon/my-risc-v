@@ -36,7 +36,7 @@ module ins_fetch(
 		.data_i   (pc_addr_i   ),
 
 		.jump_en_i(jump_en_i),
-		.hold_flag_i(hold_flag_i),
+		.hold_flag_i(1'b0),
 		.data_o   (inst_addr_temp   )
 	);
 
