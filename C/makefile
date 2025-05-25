@@ -14,13 +14,15 @@ DEST = /mnt/hgfs/temp/
 # 默认目标
 all: $(ELF) dump copy
 
+# 编译汇编文件
+start.o: start.s
+	$(CC) $(CFLAGS) -c $< -o $@
+
 # 编译 C 文件
 test.o: test.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
-# 编译汇编文件
-start.o: start.s
-	$(CC) $(CFLAGS) -c $< -o $@
+
 
 # 链接生成 ELF 文件
 $(ELF): $(OBJS) linker.lds
